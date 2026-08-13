@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="송동현 | 엔드포인트 보안 솔루션 구축·운영 경험 타임라인과 케이스 스터디" />
+  <title>Experience | 송동현</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230a0d0c'/%3E%3Cpath d='M50 18 L82 32 V52 C82 70 68 82 50 88 C32 82 18 70 18 52 V32 Z' fill='none' stroke='%233ddc97' stroke-width='6'/%3E%3Cpath d='M38 50 L46 58 L64 40' fill='none' stroke='%234fb0ff' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">DH<span>.</span>dev</a>
+      <ul class="nav-links">
+        <li><a href="index.html"><span class="nav-icon">🏠</span>Home</a></li>
+        <li><a href="experience.html"><span class="nav-icon">🛠️</span>Experience</a></li>
+        <li><a href="notes.html"><span class="nav-icon">📓</span>Notes</a></li>
+        <li><a href="gaming.html"><span class="nav-icon">🎮</span>Gaming</a></li>
+      </ul>
+      <button class="nav-hamburger" aria-label="메뉴 열기"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <div class="page-wrapper">
+    <div class="page-hero">
+      <div class="page-hero-content">
+        <span class="section-tag">// Experience</span>
+        <h1>엔드포인트 보안 솔루션<br>구축 · 운영 경험</h1>
+        <p>3-tier 구조(서버 · 콘솔 · 에이전트) 보안 솔루션을 신규 구축하고 운영하며 겪은 과정입니다.</p>
+      </div>
+    </div>
+
+    <!-- ── TIMELINE ─────────────────────────────────────── -->
+    <section class="section">
+      <div class="section-header">
+        <span class="section-tag">// Timeline</span>
+        <h2 class="section-title">걸어온 과정</h2>
+        <p class="section-desc">
+          <!-- TODO: 실제 시작 시기로 교체해주세요 -->
+          정확한 날짜는 추후 업데이트 예정입니다.
+        </p>
+      </div>
+
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-date"><!-- TODO: 실제 날짜 -->202X. 0X</div>
+          <div class="timeline-title">엔드포인트 보안 솔루션 실습 환경 구축</div>
+          <p class="timeline-desc">
+            Windows/Linux 서버에 보안 콘솔·에이전트를 신규 설치하며 3-tier 구조(서버-콘솔-에이전트)를 처음부터 구성했습니다.
+            WinRM 원격 접속 환경, 방화벽 정책, 서비스 등록까지 전체 설치 절차를 문서화했습니다.
+          </p>
+          <div class="timeline-tags">
+            <span class="tag">Windows Server</span>
+            <span class="tag">Linux</span>
+            <span class="tag">WinRM</span>
+            <span class="tag">3-Tier 아키텍처</span>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-date"><!-- TODO: 실제 날짜 -->202X. 0X</div>
+          <div class="timeline-title">패치관리 · 백신관리 모듈 운영</div>
+          <p class="timeline-desc">
+            에이전트 정책 배포, 패치 상태 동기화, 콘솔-에이전트 간 통신 문제를 로그 기반으로 진단했습니다.
+            콘솔에 표시되는 상태와 실제 처리 결과가 다른 경우를 다수 겪으며, 항상 OS·에이전트 로그로 재검증하는 습관을 들였습니다.
+          </p>
+          <div class="timeline-tags">
+            <span class="tag">패치관리(PMS)</span>
+            <span class="tag">백신관리</span>
+            <span class="tag">로그 분석</span>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-date"><!-- TODO: 실제 날짜 -->202X. 0X</div>
+          <div class="timeline-title">트러블슈팅 지식베이스 구축</div>
+          <p class="timeline-desc">
+            반복되는 문제를 "증상 → 원인 → 해결" 구조로 정리하는 개인 지식베이스를 운영하기 시작했습니다.
+            매뉴얼과 실제 환경이 어긋나는 지점을 별도로 기록해, 같은 삽질을 반복하지 않도록 관리하고 있습니다.
+          </p>
+          <div class="timeline-tags">
+            <span class="tag">문서화</span>
+            <span class="tag">지식 관리</span>
+            <span class="tag">재발 방지</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CASE STUDY ───────────────────────────────────── -->
+    <section class="section">
+      <div class="section-header">
+        <span class="section-tag">// Case Study</span>
+        <h2 class="section-title">일하는 <span class="highlight">방식</span> 예시</h2>
+        <p class="section-desc">실제 겪었던 문제 해결 과정을 일반화한 예시입니다.</p>
+      </div>
+
+      <div class="card reveal">
+        <h3 style="margin-bottom:0.8rem; font-size:1.2rem;">🔍 "정책이 안 먹힌다"는 신고 — 콘솔이 아니라 에이전트 로그부터</h3>
+        <p style="color:var(--text-secondary); margin-bottom:1rem;">
+          배포한 정책이 특정 단말에만 적용되지 않는다는 보고가 들어왔을 때, 콘솔 화면상으로는 "정상 배포됨"으로 표시되어 있었습니다.
+          하지만 콘솔 표시를 그대로 믿지 않고 해당 단말의 에이전트 로그를 직접 확인하는 순서로 접근했습니다.
+        </p>
+        <ol style="color:var(--text-secondary); padding-left:1.2rem; display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1rem;">
+          <li>콘솔에서 "정상"으로 보여도 진짜 상태는 아닐 수 있다고 가정</li>
+          <li>대상 단말에 원격 접속해 에이전트 로그 파일을 직접 열람</li>
+          <li>로그에서 실제 에러 코드와 실패 시점을 확인</li>
+          <li>원인을 좁힌 뒤 재현 조건을 정리해 재발 방지 문서로 기록</li>
+        </ol>
+        <div class="timeline-tags">
+          <span class="tag">근본 원인 분석</span>
+          <span class="tag">로그 우선 원칙</span>
+          <span class="tag">문서화</span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-links">
+        <a class="footer-link" href="https://github.com/songdong7409-creator" target="_blank" rel="noopener">💻 GitHub</a>
+        <a class="footer-link" href="mailto:songdong7409@gmail.com">✉️ 이메일</a>
+      </div>
+      <div class="footer-copy">© 2026 Dong-hyun Song.</div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

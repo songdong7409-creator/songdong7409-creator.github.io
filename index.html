@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="송동현 | Endpoint Security Engineer 포트폴리오 — 엔드포인트 보안 솔루션 구축·운영 경험과 기술 노트" />
+  <title>송동현 | Endpoint Security Engineer</title>
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="송동현 | Endpoint Security Engineer" />
+  <meta property="og:description" content="엔드포인트 보안 솔루션 구축·운영 경험과 기술 노트를 정리한 포트폴리오입니다." />
+  <meta property="og:locale" content="ko_KR" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="송동현 | Endpoint Security Engineer" />
+  <meta name="twitter:description" content="엔드포인트 보안 솔루션 구축·운영 경험과 기술 노트를 정리한 포트폴리오입니다." />
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230a0d0c'/%3E%3Cpath d='M50 18 L82 32 V52 C82 70 68 82 50 88 C32 82 18 70 18 52 V32 Z' fill='none' stroke='%233ddc97' stroke-width='6'/%3E%3Cpath d='M38 50 L46 58 L64 40' fill='none' stroke='%234fb0ff' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+  <link rel="stylesheet" href="css/components/contact.css" />
+
+  <style>
+    .hero {
+      min-height: calc(100vh - var(--nav-height));
+      display: flex;
+      align-items: center;
+      padding: 5rem 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 70% 40%, rgba(79, 176, 255, 0.1) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 20% 70%, rgba(61, 220, 151, 0.07) 0%, transparent 60%);
+    }
+
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+      background-size: 50px 50px;
+      mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+    }
+
+    .hero-inner {
+      position: relative; z-index: 1;
+      max-width: 1200px; margin: 0 auto; width: 100%;
+      display: grid; grid-template-columns: 1.1fr 0.9fr;
+      gap: 4rem; align-items: center;
+    }
+
+    .hero-label {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-family: var(--font-mono); font-size: 0.82rem;
+      color: var(--accent-green);
+      background: rgba(61, 220, 151, 0.08);
+      border: 1px solid rgba(61, 220, 151, 0.2);
+      padding: 0.35rem 0.9rem; border-radius: 999px;
+      margin-bottom: 1.5rem;
+      animation: fadeInUp 0.6s ease forwards;
+    }
+
+    .hero-label .dot {
+      width: 6px; height: 6px; background: var(--accent-green);
+      border-radius: 50%; animation: pulseGlow 2s ease-in-out infinite;
+    }
+
+    .hero-name {
+      font-size: clamp(2.6rem, 6vw, 4.6rem);
+      font-weight: 900; letter-spacing: -2px; line-height: 1.08;
+      margin-bottom: 0.5rem;
+      animation: fadeInUp 0.6s ease 0.1s both;
+    }
+
+    .hero-name .name-en {
+      display: block;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+
+    .hero-role {
+      font-size: 1.15rem; color: var(--text-secondary); margin-bottom: 1.5rem;
+      animation: fadeInUp 0.6s ease 0.2s both;
+      display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
+    }
+
+    .hero-role-dynamic { color: var(--text-primary); font-weight: 600; min-width: 200px; }
+    .hero-role-dynamic::after { content: '|'; animation: blink 1s infinite; color: var(--accent-green); margin-left: 2px; }
+
+    .hero-desc {
+      color: var(--text-secondary); max-width: 480px; margin-bottom: 2rem;
+      animation: fadeInUp 0.6s ease 0.3s both;
+    }
+
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; animation: fadeInUp 0.6s ease 0.4s both; }
+
+    .hero-stats {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;
+      margin-top: 3rem; animation: fadeInUp 0.6s ease 0.5s both;
+    }
+
+    .hero-stat { text-align: center; }
+    .hero-stat-num {
+      font-family: var(--font-mono); font-size: 1.8rem; font-weight: 700;
+      background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hero-stat-label { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem; }
+
+    /* Terminal visual */
+    .hero-visual {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      animation: fadeInUp 0.7s ease 0.3s both;
+    }
+
+    .term-head {
+      display: flex; align-items: center; gap: 0.4rem;
+      padding: 0.8rem 1rem; border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+    }
+    .term-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .term-dot.r { background: #ff5f57; }
+    .term-dot.y { background: #febc2e; }
+    .term-dot.g { background: #28c840; }
+    .term-title { margin-left: 0.6rem; font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted); }
+
+    .term-body { padding: 1.2rem 1.4rem; font-family: var(--font-mono); font-size: 0.85rem; line-height: 1.9; min-height: 260px; }
+    .t-prompt { color: var(--accent-green); }
+    .t-cmd { color: var(--text-primary); }
+    .t-out { color: var(--text-secondary); white-space: pre-wrap; }
+    .t-key { color: var(--accent-blue); }
+    .t-val { color: var(--text-primary); }
+    .t-green { color: var(--accent-green); }
+
+    @media (max-width: 900px) {
+      .hero-inner { grid-template-columns: 1fr; }
+      .hero-visual { order: -1; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">DH<span>.</span>dev</a>
+      <ul class="nav-links">
+        <li><a href="index.html"><span class="nav-icon">🏠</span>Home</a></li>
+        <li><a href="experience.html"><span class="nav-icon">🛠️</span>Experience</a></li>
+        <li><a href="notes.html"><span class="nav-icon">📓</span>Notes</a></li>
+        <li><a href="gaming.html"><span class="nav-icon">🎮</span>Gaming</a></li>
+      </ul>
+      <button class="nav-hamburger" aria-label="메뉴 열기"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <div class="page-wrapper">
+    <!-- ── HERO ─────────────────────────────────────────── -->
+    <section class="hero">
+      <div class="hero-bg"></div>
+      <div class="hero-grid"></div>
+      <div class="hero-inner">
+        <div>
+          <div class="hero-label"><span class="dot"></span>Open to opportunities</div>
+          <h1 class="hero-name">
+            송동현
+            <span class="name-en">Dong-hyun Song</span>
+          </h1>
+          <div class="hero-role">
+            <span data-typewriter='["Endpoint Security Engineer", "3-Tier 인프라 운영", "로그부터 확인하는 엔지니어"]' class="hero-role-dynamic"></span>
+          </div>
+          <p class="hero-desc">
+            엔드포인트 보안 솔루션(서버 · 콘솔 · 에이전트 3-tier 구조)의 구축과 운영을 담당합니다.
+            콘솔 화면을 그대로 믿지 않고 로그와 OS 상태를 직접 확인해 원인을 좁혀가는 방식으로 일합니다.
+          </p>
+          <div class="hero-actions">
+            <a href="experience.html" class="btn btn-primary">🛠️ 경험 보기</a>
+            <a href="notes.html" class="btn btn-outline">📓 기술 노트</a>
+          </div>
+          <div class="hero-stats">
+            <div class="hero-stat">
+              <div class="hero-stat-num" data-counter="3">0</div>
+              <div class="hero-stat-label">Tier 아키텍처</div>
+            </div>
+            <div class="hero-stat">
+              <div class="hero-stat-num" data-counter="2">0</div>
+              <div class="hero-stat-label">OS 플랫폼</div>
+            </div>
+            <div class="hero-stat">
+              <div class="hero-stat-num" data-counter="1">0</div>
+              <div class="hero-stat-label">지식베이스 운영</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <div class="term-head">
+            <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+            <span class="term-title">whoami — dong-hyun</span>
+          </div>
+          <div class="term-body">
+            <div><span class="t-prompt">➜</span> <span class="t-cmd">whoami</span></div>
+            <div class="t-out t-green">송동현 (Dong-hyun Song)</div>
+            <div style="margin-top:0.6rem;"><span class="t-prompt">➜</span> <span class="t-cmd">cat role.json</span></div>
+            <div class="t-out"><span class="t-key">"role"</span>: <span class="t-val">"Endpoint Security Engineer"</span></div>
+            <div class="t-out"><span class="t-key">"focus"</span>: <span class="t-val">["Windows/Linux 서버", "패치관리", "백신관리"]</span></div>
+            <div class="t-out"><span class="t-key">"principle"</span>: <span class="t-val">"콘솔보다 로그"</span></div>
+            <div style="margin-top:0.6rem;"><span class="t-prompt">➜</span> <span class="t-cmd">status</span></div>
+            <div class="t-out t-green">✓ 지식베이스 운영 중 — 로그사전 · 트러블슈팅 기록</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── ABOUT ────────────────────────────────────────── -->
+    <section class="section reveal" id="about">
+      <div class="section-header">
+        <span class="section-tag">// About</span>
+        <h2 class="section-title">저는 이런 방식으로 일합니다</h2>
+        <p class="section-desc">엔드포인트 보안 솔루션의 3-tier 구조(서버·콘솔·에이전트)를 다루며 쌓은 원칙입니다.</p>
+      </div>
+      <div class="grid-3 reveal-group">
+        <div class="card">
+          <div style="font-size:1.6rem; margin-bottom:0.8rem;">🔎</div>
+          <h3 style="margin-bottom:0.6rem;">콘솔은 참고, 로그가 진실</h3>
+          <p style="color:var(--text-secondary); font-size:0.92rem;">
+            운영 콘솔의 표시 상태와 실제 처리 결과가 어긋나는 경우를 자주 겪었습니다.
+            판단은 항상 에이전트/서버의 실제 로그와 OS 상태 확인을 거친 뒤 내립니다.
+          </p>
+        </div>
+        <div class="card">
+          <div style="font-size:1.6rem; margin-bottom:0.8rem;">📚</div>
+          <h3 style="margin-bottom:0.6rem;">겪은 문제는 기록으로 남긴다</h3>
+          <p style="color:var(--text-secondary); font-size:0.92rem;">
+            증상 → 원인 → 해결 구조로 트러블슈팅 지식베이스를 직접 운영합니다.
+            같은 삽질을 반복하지 않는 것, 그리고 다음 사람이 더 빨리 찾게 하는 것이 목표입니다.
+          </p>
+        </div>
+        <div class="card">
+          <div style="font-size:1.6rem; margin-bottom:0.8rem;">🧩</div>
+          <h3 style="margin-bottom:0.6rem;">추측과 확인된 사실을 구분</h3>
+          <p style="color:var(--text-secondary); font-size:0.92rem;">
+            매뉴얼과 실제 환경이 다를 때는 실제가 우선이라고 생각합니다.
+            대신 "왜 다른지"는 반드시 기록해서 다음에 같은 혼란을 줄입니다.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SKILLS SUMMARY ───────────────────────────────── -->
+    <section class="section reveal" id="skills">
+      <div class="section-header">
+        <span class="section-tag">// Skills</span>
+        <h2 class="section-title">다루는 <span class="highlight">기술 영역</span></h2>
+        <p class="section-desc">실무에서 직접 설치·운영하며 익힌 기술들입니다.</p>
+      </div>
+      <div class="grid-2 reveal-group">
+        <div class="card">
+          <h3 style="margin-bottom:1rem;">🖥️ 인프라 / OS</h3>
+          <div class="tag" style="margin:0.2rem;">Windows Server</div>
+          <div class="tag" style="margin:0.2rem;">Linux (CentOS/Rocky)</div>
+          <div class="tag" style="margin:0.2rem;">WinRM / PowerShell Remoting</div>
+          <div class="tag" style="margin:0.2rem;">PostgreSQL</div>
+          <div class="tag" style="margin:0.2rem;">Apache httpd</div>
+        </div>
+        <div class="card">
+          <h3 style="margin-bottom:1rem;">🛡️ 보안 솔루션 운영</h3>
+          <div class="tag" style="margin:0.2rem;">3-Tier 아키텍처 (서버/콘솔/에이전트)</div>
+          <div class="tag" style="margin:0.2rem;">패치관리(PMS)</div>
+          <div class="tag" style="margin:0.2rem;">백신관리 정책</div>
+          <div class="tag" style="margin:0.2rem;">로그 기반 트러블슈팅</div>
+          <div class="tag" style="margin:0.2rem;">신규 서버 구축</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CONTACT ──────────────────────────────────────── -->
+    <section class="section reveal" id="contact">
+      <div class="section-header">
+        <span class="section-tag">// Contact</span>
+        <h2 class="section-title">연락 주세요</h2>
+        <p class="section-desc">보안/인프라 엔지니어 포지션 관련 제안은 언제든 환영합니다.</p>
+      </div>
+      <div class="contact-grid">
+        <div class="contact-info">
+          <h2>같이 이야기해요</h2>
+          <p>Endpoint Security / DevOps / Infra 관련 기회나 기술 이야기를 편하게 나누고 싶습니다.</p>
+          <a class="contact-method" href="mailto:songdong7409@gmail.com">
+            <span class="icon">✉️</span> songdong7409@gmail.com
+          </a>
+          <a class="contact-method" href="https://github.com/songdong7409-creator" target="_blank" rel="noopener">
+            <span class="icon">💻</span> github.com/songdong7409-creator
+          </a>
+        </div>
+        <form class="contact-form" id="contact-form" action="mailto:songdong7409@gmail.com" method="POST" enctype="text/plain">
+          <div class="form-row">
+            <input type="text" name="name" placeholder="이름" required autocomplete="name" />
+            <input type="email" name="email" placeholder="이메일" required autocomplete="email" />
+          </div>
+          <input type="text" name="subject" placeholder="제목" autocomplete="off" />
+          <textarea name="message" placeholder="전달하실 내용을 적어주세요" required></textarea>
+          <button type="submit" class="btn btn-primary form-submit">Send Message ➤</button>
+        </form>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-links">
+        <a class="footer-link" href="https://github.com/songdong7409-creator" target="_blank" rel="noopener">💻 GitHub</a>
+        <a class="footer-link" href="mailto:songdong7409@gmail.com">✉️ 이메일</a>
+      </div>
+      <div class="footer-copy">© 2026 Dong-hyun Song.</div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

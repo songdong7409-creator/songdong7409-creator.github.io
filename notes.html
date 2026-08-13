@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="송동현 | 트러블슈팅 방법론과 실무에서 정리한 기술 노트" />
+  <title>Notes | 송동현</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230a0d0c'/%3E%3Cpath d='M50 18 L82 32 V52 C82 70 68 82 50 88 C32 82 18 70 18 52 V32 Z' fill='none' stroke='%233ddc97' stroke-width='6'/%3E%3Cpath d='M38 50 L46 58 L64 40' fill='none' stroke='%234fb0ff' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+  <style>
+    .note-card pre {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.9rem 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: var(--accent-green);
+      overflow-x: auto;
+      margin: 0.8rem 0;
+    }
+    .note-label {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      margin-bottom: 0.6rem;
+    }
+    .note-label.symptom { background: rgba(255, 95, 87, 0.1); color: #ff8a80; }
+    .note-label.cause   { background: rgba(79, 176, 255, 0.1); color: var(--accent-blue); }
+    .note-label.fix     { background: rgba(61, 220, 151, 0.1); color: var(--accent-green); }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">DH<span>.</span>dev</a>
+      <ul class="nav-links">
+        <li><a href="index.html"><span class="nav-icon">🏠</span>Home</a></li>
+        <li><a href="experience.html"><span class="nav-icon">🛠️</span>Experience</a></li>
+        <li><a href="notes.html"><span class="nav-icon">📓</span>Notes</a></li>
+        <li><a href="gaming.html"><span class="nav-icon">🎮</span>Gaming</a></li>
+      </ul>
+      <button class="nav-hamburger" aria-label="메뉴 열기"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <div class="page-wrapper">
+    <div class="page-hero">
+      <div class="page-hero-content">
+        <span class="section-tag">// Notes</span>
+        <h1>기술 노트 & 방법론</h1>
+        <p>실무에서 지켜온 원칙과, 반복되지 않게 기록해둔 트러블슈팅 사례입니다.</p>
+      </div>
+    </div>
+
+    <!-- ── PRINCIPLES ───────────────────────────────────── -->
+    <section class="section">
+      <div class="section-header">
+        <span class="section-tag">// Principles</span>
+        <h2 class="section-title">지식베이스 운영 원칙</h2>
+        <p class="section-desc">개인 트러블슈팅 문서를 관리하며 지키는 5가지 원칙입니다.</p>
+      </div>
+      <div class="grid-3 reveal-group">
+        <div class="card">
+          <div style="font-family:var(--font-mono); color:var(--accent-green); margin-bottom:0.6rem;">01</div>
+          <h3 style="margin-bottom:0.5rem; font-size:1.05rem;">로그를 먼저 본다</h3>
+          <p style="color:var(--text-secondary); font-size:0.9rem;">문제가 생기면 화면보다 로그 파일을 먼저 연다. 표시되는 상태와 실제 처리 결과는 다를 수 있다.</p>
+        </div>
+        <div class="card">
+          <div style="font-family:var(--font-mono); color:var(--accent-green); margin-bottom:0.6rem;">02</div>
+          <h3 style="margin-bottom:0.5rem; font-size:1.05rem;">콘솔을 진실로 믿지 않는다</h3>
+          <p style="color:var(--text-secondary); font-size:0.9rem;">"정상"이라는 표시는 확인의 시작점일 뿐, 결론이 아니다. 항상 OS/에이전트 단에서 직접 재검증한다.</p>
+        </div>
+        <div class="card">
+          <div style="font-family:var(--font-mono); color:var(--accent-green); margin-bottom:0.6rem;">03</div>
+          <h3 style="margin-bottom:0.5rem; font-size:1.05rem;">추측과 사실을 구분</h3>
+          <p style="color:var(--text-secondary); font-size:0.9rem;">기록할 때 검증된 사실과 아직 가설인 것을 명확히 나눈다. 나중에 스스로도 헷갈리지 않기 위해서다.</p>
+        </div>
+        <div class="card">
+          <div style="font-family:var(--font-mono); color:var(--accent-green); margin-bottom:0.6rem;">04</div>
+          <h3 style="margin-bottom:0.5rem; font-size:1.05rem;">매뉴얼보다 실제가 우선</h3>
+          <p style="color:var(--text-secondary); font-size:0.9rem;">문서와 실제 환경이 다르면 실제 동작을 신뢰하되, 그 차이는 반드시 별도로 기록해둔다.</p>
+        </div>
+        <div class="card">
+          <div style="font-family:var(--font-mono); color:var(--accent-green); margin-bottom:0.6rem;">05</div>
+          <h3 style="margin-bottom:0.5rem; font-size:1.05rem;">알아낸 즉시 기록</h3>
+          <p style="color:var(--text-secondary); font-size:0.9rem;">새로 알아낸 사실은 그 자리에서 바로 문서에 반영한다. 미루면 결국 잊혀지거나 다시 삽질한다.</p>
+        </div>
+        <div class="card">
+          <div style="font-family:var(--font-mono); color:var(--accent-green); margin-bottom:0.6rem;">+</div>
+          <h3 style="margin-bottom:0.5rem; font-size:1.05rem;">미해결도 남긴다</h3>
+          <p style="color:var(--text-secondary); font-size:0.9rem;">원인을 못 찾은 문제도 "미해결" 목록에 그대로 남겨서, 같은 삽질을 반복하지 않도록 관리한다.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SAMPLE TROUBLESHOOTING NOTES ─────────────────── -->
+    <section class="section">
+      <div class="section-header">
+        <span class="section-tag">// Sample Notes</span>
+        <h2 class="section-title">트러블슈팅 기록 예시</h2>
+        <p class="section-desc">실무 중 겪은 문제를 일반적인 sysadmin 상황으로 정리한 예시입니다.</p>
+      </div>
+      <div class="grid-2 reveal-group">
+
+        <div class="card note-card">
+          <span class="note-label symptom">SYMPTOM</span>
+          <h3 style="margin-bottom:0.6rem;">신규 Windows 서버에 WinRM 원격 접속이 안 됨</h3>
+          <span class="note-label cause">CAUSE</span>
+          <p style="color:var(--text-secondary); font-size:0.9rem;">
+            기본 설정만으로는 도메인 밖(워크그룹) 환경에서 신뢰 관계가 없어 PowerShell Remoting이 거부된다.
+          </p>
+          <span class="note-label fix">FIX</span>
+          <pre># 접속하는 쪽(클라이언트)
+Set-Item WSMan:\localhost\Client\TrustedHosts -Value "*" -Force
+
+# 접속받는 쪽(대상 서버)
+New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System `
+  -Name LocalAccountTokenFilterPolicy -Value 1 -PropertyType DWord -Force
+Enable-PSRemoting -Force
+# 방화벽 인바운드 규칙(WINRM-HTTP-In-TCP)의 RemoteAddress를 Any로 허용</pre>
+        </div>
+
+        <div class="card note-card">
+          <span class="note-label symptom">SYMPTOM</span>
+          <h3 style="margin-bottom:0.6rem;">Windows에서 만든 스크립트를 SSH로 실행하면 첫 줄이 깨짐</h3>
+          <span class="note-label cause">CAUSE</span>
+          <p style="color:var(--text-secondary); font-size:0.9rem;">
+            <code>bash: line 1: su: command not found</code> — 원인은 문법 오류가 아니라 파일 맨 앞에 붙은 UTF-8 BOM.
+          </p>
+          <span class="note-label fix">FIX</span>
+          <pre># BOM 제거 후 실행
+sed '1s/^\xef\xbb\xbf//' script.sh | bash -s
+
+# 근본 대책: 스크립트는 UTF-8(BOM 없음)으로 저장</pre>
+        </div>
+
+        <div class="card note-card">
+          <span class="note-label symptom">SYMPTOM</span>
+          <h3 style="margin-bottom:0.6rem;">한글 PDF 매뉴얼을 텍스트로 추출하면 전부 공백으로 깨짐</h3>
+          <span class="note-label cause">CAUSE</span>
+          <p style="color:var(--text-secondary); font-size:0.9rem;">
+            일반적인 PDF 텍스트 추출 도구가 특정 한글 인코딩 폰트를 제대로 처리하지 못한다.
+          </p>
+          <span class="note-label fix">FIX</span>
+          <p style="color:var(--text-secondary); font-size:0.9rem;">
+            텍스트 추출을 포기하고 <strong>페이지를 이미지로 렌더링</strong>해서 읽는다.
+            Windows라면 별도 프로그램 설치 없이 <code>Windows.Data.Pdf</code> API로 페이지별 PNG 렌더링이 가능하다.
+          </p>
+        </div>
+
+        <div class="card note-card">
+          <span class="note-label symptom">SYMPTOM</span>
+          <h3 style="margin-bottom:0.6rem;">리눅스 서버 로그를 열면 한글이 깨져 보임</h3>
+          <span class="note-label cause">CAUSE</span>
+          <p style="color:var(--text-secondary); font-size:0.9rem;">
+            로그가 UTF-8이 아닌 CP949(EUC-KR 계열)로 기록되는 환경이 여전히 많다.
+          </p>
+          <span class="note-label fix">FIX</span>
+          <pre>iconv -f CP949 -t UTF-8 로그파일.txt</pre>
+        </div>
+
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-links">
+        <a class="footer-link" href="https://github.com/songdong7409-creator" target="_blank" rel="noopener">💻 GitHub</a>
+        <a class="footer-link" href="mailto:songdong7409@gmail.com">✉️ 이메일</a>
+      </div>
+      <div class="footer-copy">© 2026 Dong-hyun Song.</div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
