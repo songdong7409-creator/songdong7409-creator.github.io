@@ -41,7 +41,7 @@
     .stat-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
     .stat-row:last-child { border-bottom: none; }
     .stat-row span:first-child { color: var(--text-secondary); }
-    .stat-row span:last-child { font-family: var(--font-mono); color: var(--text-primary); font-weight: 600; }
+    .stat-row span:last-child { font-family: var(--font-mono); color: var(--text-primary); font-weight: 600; text-align: right; }
     .game-portrait {
       width: 48px; height: 48px;
       border-radius: var(--radius-sm);
@@ -64,6 +64,94 @@
       width: 5px; height: 5px; border-radius: 50%;
       background: var(--accent-green);
       animation: pulseGlow 2s ease-in-out infinite;
+    }
+
+    /* ── Clickable game card ─────────────────────────────── */
+    .game-card {
+      cursor: pointer;
+    }
+    .game-card:hover { border-color: var(--border-accent); }
+    .game-card:focus-visible {
+      outline: 2px solid var(--accent-green);
+      outline-offset: 2px;
+    }
+    .game-card-hint {
+      margin-top: 1rem;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      text-align: right;
+    }
+
+    /* ── Detail overlay (FLIP shared-element transition) ─── */
+    .detail-overlay {
+      position: fixed; inset: 0; z-index: 2000;
+      display: none;
+      background: rgba(5, 8, 7, 0.65);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+    .detail-overlay.open { display: block; }
+
+    .detail-panel {
+      position: fixed;
+      top: 4vh; left: 8vw; width: 84vw; height: 92vh;
+      background: var(--bg-card);
+      border: 1px solid var(--border-accent);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      overflow-y: auto;
+      transform-origin: top left;
+      padding: 2.5rem;
+      max-width: 720px;
+      margin: 0 auto;
+      left: 0; right: 0;
+    }
+
+    .detail-close {
+      position: absolute;
+      top: 1.2rem; right: 1.2rem;
+      width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+      cursor: pointer;
+    }
+    .detail-close:hover { color: var(--text-primary); border-color: var(--accent-green); }
+
+    .detail-content-inner { opacity: 0; transition: opacity 0.25s ease; }
+    .detail-content-inner.visible { opacity: 1; }
+
+    .detail-header {
+      display: flex; align-items: center; gap: 1.2rem;
+      margin-bottom: 2rem;
+      padding-right: 2.5rem;
+    }
+    .detail-portrait {
+      width: 84px; height: 84px;
+      border-radius: var(--radius-md);
+      object-fit: cover;
+      background: rgba(61, 220, 151, 0.08);
+      flex-shrink: 0;
+    }
+    .detail-game-tag {
+      font-family: var(--font-mono); font-size: 0.75rem;
+      color: var(--accent-green); margin-bottom: 0.3rem;
+    }
+    .detail-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.3rem; }
+    .detail-sub { color: var(--text-secondary); font-size: 0.92rem; }
+
+    .detail-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0 2rem; }
+    .detail-stats .stat-row { grid-column: span 1; }
+    @media (max-width: 560px) {
+      .detail-stats { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .detail-panel { transition: none !important; }
     }
   </style>
 </head>
@@ -91,7 +179,7 @@
     </div>
 
     <div class="placeholder-banner">
-      🟢 로스트아크·메이플스토리는 자체 API 서버(<code>api.aionbot.kr</code>)에서 실시간으로 캐릭터 정보를 불러옵니다. 롤은 수동 입력 카드입니다.
+      🟢 로스트아크·메이플스토리는 자체 API 서버(<code>api.aionbot.kr</code>)에서 실시간으로 캐릭터 정보를 불러옵니다. 카드를 클릭하면 상세정보를 볼 수 있어요.
     </div>
 
     <section class="section">
@@ -101,8 +189,8 @@
         <p class="section-desc">가장 많이 플레이하고 애정을 갖고 있는 게임들입니다.</p>
       </div>
 
-      <div class="grid-3 reveal-group">
-        <div class="card" id="card-lostark">
+      <div class="grid-2 reveal-group">
+        <div class="card game-card" id="card-lostark" role="button" tabindex="0" aria-label="로스트아크 상세정보 보기">
           <div class="game-card-head">
             <img class="game-portrait" id="lostark-img" alt="로스트아크 캐릭터 이미지" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'game-icon',textContent:'🗡️'}))" />
             <div>
@@ -114,9 +202,10 @@
           <div class="stat-row"><span>아이템 레벨</span><span id="lostark-itemlevel">-</span></div>
           <div class="stat-row"><span>원정대 레벨</span><span id="lostark-expedition">-</span></div>
           <div class="stat-row"><span>길드</span><span id="lostark-guild">-</span></div>
+          <div class="game-card-hint">클릭해서 상세보기 →</div>
         </div>
 
-        <div class="card" id="card-maple">
+        <div class="card game-card" id="card-maple" role="button" tabindex="0" aria-label="메이플스토리 상세정보 보기">
           <div class="game-card-head">
             <img class="game-portrait" id="maple-img" alt="메이플스토리 캐릭터 이미지" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'game-icon',textContent:'🍁'}))" />
             <div>
@@ -128,19 +217,7 @@
           <div class="stat-row"><span>레벨</span><span id="maple-level">-</span></div>
           <div class="stat-row"><span>경험치</span><span id="maple-exp">-</span></div>
           <div class="stat-row"><span>길드</span><span id="maple-guild">-</span></div>
-        </div>
-
-        <div class="card">
-          <div class="game-card-head">
-            <div class="game-icon">⚔️</div>
-            <div>
-              <h3 style="font-size:1.05rem;">리그 오브 레전드</h3>
-              <div class="game-meta">MOBA · PC</div>
-            </div>
-          </div>
-          <div class="stat-row"><span>최고 티어/랭크</span><span>-</span></div>
-          <div class="stat-row"><span>주 포지션</span><span>-</span></div>
-          <div class="stat-row"><span>시즌 성과</span><span>-</span></div>
+          <div class="game-card-hint">클릭해서 상세보기 →</div>
         </div>
       </div>
     </section>
@@ -167,6 +244,24 @@
     </section>
   </div>
 
+  <!-- ── Detail overlay ───────────────────────────────────── -->
+  <div class="detail-overlay" id="detail-overlay" aria-hidden="true">
+    <div class="detail-panel" id="detail-panel">
+      <button class="detail-close" id="detail-close" aria-label="닫기">✕</button>
+      <div class="detail-content-inner" id="detail-content-inner">
+        <div class="detail-header">
+          <img class="detail-portrait" id="detail-portrait" alt="" onerror="this.style.visibility='hidden'" />
+          <div>
+            <div class="detail-game-tag" id="detail-game-tag"></div>
+            <div class="detail-title" id="detail-title"></div>
+            <div class="detail-sub" id="detail-sub"></div>
+          </div>
+        </div>
+        <div class="detail-stats" id="detail-stats"></div>
+      </div>
+    </div>
+  </div>
+
   <footer>
     <div class="footer-inner">
       <div class="footer-links">
@@ -184,13 +279,19 @@
       const API_BASE = 'https://api.aionbot.kr';
       const LOSTARK_CHARACTER = '물설아';
       const MAPLE_CHARACTER = '트넌지팅럴넌';
+      const REDUCE_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+      let lostarkData = null;
+      let mapleData = null;
+
+      // ── Load summary cards ──────────────────────────────
       async function loadLostArk() {
         const metaEl = document.getElementById('lostark-meta');
         try {
           const res = await fetch(`${API_BASE}/api/lostark/${encodeURIComponent(LOSTARK_CHARACTER)}`);
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const d = await res.json();
+          lostarkData = d;
 
           document.getElementById('lostark-img').src = d.CharacterImage || '';
           metaEl.textContent = `${d.CharacterClassName || 'MMORPG'} · ${d.CharacterName || LOSTARK_CHARACTER}`;
@@ -210,6 +311,7 @@
           const res = await fetch(`${API_BASE}/api/maple/${encodeURIComponent(MAPLE_CHARACTER)}`);
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const d = await res.json();
+          mapleData = d;
 
           if (d.character_image) document.getElementById('maple-img').src = d.character_image;
           metaEl.textContent = `${d.character_class || 'MMORPG'} · ${d.character_name || MAPLE_CHARACTER}`;
@@ -222,6 +324,179 @@
           console.warn('MapleStory API error:', err);
         }
       }
+
+      // ── Detail overlay content ──────────────────────────
+      function statRow(label, value) {
+        return `<div class="stat-row"><span>${label}</span><span>${value ?? '-'}</span></div>`;
+      }
+
+      function populateLostArkDetail() {
+        const d = lostarkData;
+        document.getElementById('detail-portrait').src = d?.CharacterImage || '';
+        document.getElementById('detail-game-tag').textContent = '🗡️ 로스트아크';
+        document.getElementById('detail-title').textContent = d?.CharacterName || LOSTARK_CHARACTER;
+        document.getElementById('detail-sub').textContent = d
+          ? `${d.ServerName} · ${d.CharacterClassName} · ${d.Title || ''}`
+          : '불러오는 중…';
+
+        const statsHtml = d ? [
+          statRow('서버', d.ServerName),
+          statRow('직업', d.CharacterClassName),
+          statRow('아이템 레벨', d.ItemAvgLevel),
+          statRow('원정대 레벨', d.ExpeditionLevel ? `Lv.${d.ExpeditionLevel}` : '-'),
+          statRow('전투 레벨', d.CharacterLevel),
+          statRow('칭호', d.Title),
+          statRow('길드', d.GuildName),
+          statRow('길드 등급', d.GuildMemberGrade),
+          statRow('스킬 포인트', (d.UsingSkillPoint != null && d.TotalSkillPoint != null) ? `${d.UsingSkillPoint} / ${d.TotalSkillPoint}` : '-'),
+          statRow('명예 포인트', d.HonorPoint),
+        ].join('') : '<p style="color:var(--text-secondary);">불러오는 중…</p>';
+
+        document.getElementById('detail-stats').innerHTML = statsHtml;
+      }
+
+      function populateMapleDetail() {
+        const d = mapleData;
+        document.getElementById('detail-portrait').src = d?.character_image || '';
+        document.getElementById('detail-game-tag').textContent = '🍁 메이플스토리';
+        document.getElementById('detail-title').textContent = d?.character_name || MAPLE_CHARACTER;
+        document.getElementById('detail-sub').textContent = d
+          ? `${d.world_name} · ${d.character_class} · ${d.character_guild_name || '길드 없음'}`
+          : '불러오는 중…';
+
+        const expFormatted = d?.character_exp != null ? Number(d.character_exp).toLocaleString('ko-KR') : null;
+
+        const statsHtml = d ? [
+          statRow('월드', d.world_name),
+          statRow('직업', `${d.character_class || '-'} (${d.character_class_level || '-'}차)`),
+          statRow('레벨', d.character_level),
+          statRow('경험치', expFormatted),
+          statRow('경험치%', d.character_exp_rate ? `${d.character_exp_rate}%` : '-'),
+          statRow('성별', d.character_gender),
+          statRow('길드', d.character_guild_name),
+          statRow('해방 퀘스트', d.liberation_quest_clear === 'true' || d.liberation_quest_clear === true ? '완료' : (d.liberation_quest_clear || '-')),
+        ].join('') : '<p style="color:var(--text-secondary);">불러오는 중…</p>';
+
+        document.getElementById('detail-stats').innerHTML = statsHtml;
+      }
+
+      // ── FLIP shared-element open/close ──────────────────
+      const overlay = document.getElementById('detail-overlay');
+      const panel = document.getElementById('detail-panel');
+      const contentInner = document.getElementById('detail-content-inner');
+      let activeCard = null;
+
+      function openDetail(cardEl, populateFn) {
+        activeCard = cardEl;
+        populateFn();
+        contentInner.classList.remove('visible');
+
+        overlay.classList.add('open');
+        overlay.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+
+        if (REDUCE_MOTION) {
+          panel.style.transition = 'none';
+          panel.style.transform = 'none';
+          contentInner.classList.add('visible');
+          return;
+        }
+
+        const first = cardEl.getBoundingClientRect();
+        panel.style.transition = 'none';
+        panel.style.transform = 'none';
+        // force layout so panel is at its final CSS-defined geometry
+        // eslint-disable-next-line no-unused-expressions
+        panel.offsetHeight;
+        const last = panel.getBoundingClientRect();
+
+        const dx = first.left - last.left;
+        const dy = first.top - last.top;
+        const sx = first.width / last.width;
+        const sy = first.height / last.height;
+
+        panel.style.transform = `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})`;
+        panel.style.borderRadius = '12px';
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            panel.style.transition = 'transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), border-radius 0.45s ease';
+            panel.style.transform = 'translate(0, 0) scale(1, 1)';
+            panel.style.borderRadius = '20px';
+          });
+        });
+
+        panel.addEventListener('transitionend', function onEnd(e) {
+          if (e.propertyName !== 'transform') return;
+          panel.removeEventListener('transitionend', onEnd);
+          contentInner.classList.add('visible');
+        });
+      }
+
+      function closeDetail() {
+        if (!activeCard) return;
+        const cardEl = activeCard;
+
+        if (REDUCE_MOTION) {
+          overlay.classList.remove('open');
+          overlay.setAttribute('aria-hidden', 'true');
+          document.body.style.overflow = '';
+          activeCard = null;
+          return;
+        }
+
+        contentInner.classList.remove('visible');
+
+        const doShrink = () => {
+          const target = cardEl.getBoundingClientRect();
+          const current = panel.getBoundingClientRect();
+          const dx = target.left - current.left;
+          const dy = target.top - current.top;
+          const sx = target.width / current.width;
+          const sy = target.height / current.height;
+
+          panel.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), border-radius 0.4s ease';
+          panel.style.transform = `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})`;
+          panel.style.borderRadius = '12px';
+
+          panel.addEventListener('transitionend', function onEnd(e) {
+            if (e.propertyName !== 'transform') return;
+            panel.removeEventListener('transitionend', onEnd);
+            overlay.classList.remove('open');
+            overlay.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+            panel.style.transition = 'none';
+            panel.style.transform = 'none';
+            activeCard = null;
+          });
+        };
+
+        setTimeout(doShrink, 150);
+      }
+
+      const lostarkCard = document.getElementById('card-lostark');
+      const mapleCard = document.getElementById('card-maple');
+
+      function bindCard(cardEl, populateFn) {
+        cardEl.addEventListener('click', () => openDetail(cardEl, populateFn));
+        cardEl.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openDetail(cardEl, populateFn);
+          }
+        });
+      }
+
+      bindCard(lostarkCard, populateLostArkDetail);
+      bindCard(mapleCard, populateMapleDetail);
+
+      document.getElementById('detail-close').addEventListener('click', closeDetail);
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeDetail();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && overlay.classList.contains('open')) closeDetail();
+      });
 
       loadLostArk();
       loadMaple();
