@@ -150,6 +150,67 @@
       .detail-stats { grid-template-columns: 1fr; }
     }
 
+    .detail-external-link {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      margin-top: 0.6rem;
+      font-family: var(--font-mono); font-size: 0.78rem;
+      color: var(--accent-blue);
+      border: 1px solid rgba(79, 176, 255, 0.3);
+      background: rgba(79, 176, 255, 0.08);
+      padding: 0.3rem 0.8rem;
+      border-radius: 999px;
+    }
+    .detail-external-link:hover { border-color: var(--accent-blue); background: rgba(79, 176, 255, 0.14); }
+
+    .detail-section-title {
+      font-family: var(--font-mono); font-size: 0.78rem;
+      color: var(--accent-blue); text-transform: uppercase; letter-spacing: 0.06em;
+      margin: 2rem 0 0.9rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .detail-loading { color: var(--text-muted); font-size: 0.85rem; font-family: var(--font-mono); }
+
+    .detail-icon-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(68px, 1fr));
+      gap: 0.7rem;
+    }
+    .detail-icon-item {
+      display: flex; flex-direction: column; align-items: center; gap: 0.3rem;
+      text-align: center;
+    }
+    .detail-icon-item img {
+      width: 42px; height: 42px;
+      border-radius: 6px; object-fit: cover;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+    }
+    .detail-icon-item .icon-lv {
+      font-family: var(--font-mono); font-size: 0.66rem; color: var(--text-muted);
+    }
+    .detail-icon-item .icon-name {
+      font-size: 0.68rem; color: var(--text-secondary); line-height: 1.25;
+      max-width: 76px; overflow: hidden; text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .detail-badge-list { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .detail-badge {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      padding: 0.35rem 0.7rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+    }
+    .detail-badge .badge-lv { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); }
+
+    .detail-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .detail-table td { padding: 0.4rem 0.5rem; border-bottom: 1px solid var(--border); }
+    .detail-table td:first-child { color: var(--text-secondary); }
+    .detail-table td:last-child { text-align: right; font-family: var(--font-mono); color: var(--text-primary); }
+
     @media (prefers-reduced-motion: reduce) {
       .detail-panel { transition: none !important; }
     }
@@ -255,9 +316,11 @@
             <div class="detail-game-tag" id="detail-game-tag"></div>
             <div class="detail-title" id="detail-title"></div>
             <div class="detail-sub" id="detail-sub"></div>
+            <a class="detail-external-link" id="detail-external-link" href="#" target="_blank" rel="noopener">↗ 원본 사이트에서 더 자세히 보기</a>
           </div>
         </div>
         <div class="detail-stats" id="detail-stats"></div>
+        <div id="detail-extra"></div>
       </div>
     </div>
   </div>
@@ -283,6 +346,13 @@
 
       let lostarkData = null;
       let mapleData = null;
+      let lostarkDetailData = null;
+      let mapleDetailData = null;
+
+      const LOSTARK_GRADE_COLOR = {
+        '일반': '#b0b0b0', '고급': '#86e08a', '희귀': '#5fb6ff',
+        '영웅': '#c576f6', '전설': '#f6a623', '유물': '#f0522d', '고대': '#e0d0a8',
+      };
 
       // ── Load summary cards ──────────────────────────────
       async function loadLostArk() {
@@ -330,6 +400,98 @@
         return `<div class="stat-row"><span>${label}</span><span>${value ?? '-'}</span></div>`;
       }
 
+      function escapeHtml(s) {
+        return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+      }
+
+      function renderIconGrid(items, { levelKey = 'level', levelPrefix = 'Lv.' } = {}) {
+        if (!items || !items.length) return '<p class="detail-loading">정보 없음</p>';
+        return `<div class="detail-icon-grid">${items.map((it) => `
+          <div class="detail-icon-item">
+            <img src="${it.icon || ''}" alt="" loading="lazy" onerror="this.style.visibility='hidden'" />
+            <div class="icon-name">${escapeHtml(it.name)}</div>
+            ${it[levelKey] != null ? `<div class="icon-lv">${levelPrefix}${escapeHtml(it[levelKey])}</div>` : ''}
+          </div>`).join('')}</div>`;
+      }
+
+      function renderArkPassiveBadges(items) {
+        if (!items || !items.length) return '<p class="detail-loading">정보 없음</p>';
+        return `<div class="detail-badge-list">${items.map((it) => {
+          const color = LOSTARK_GRADE_COLOR[it.grade] || 'var(--text-secondary)';
+          return `<span class="detail-badge" style="border-color:${color}55;color:${color};">${escapeHtml(it.name)}<span class="badge-lv">Lv.${escapeHtml(it.level)}</span></span>`;
+        }).join('')}</div>`;
+      }
+
+      function renderHyperStatTable(items) {
+        if (!items || !items.length) return '<p class="detail-loading">정보 없음</p>';
+        return `<table class="detail-table">${items.map((h) => `
+          <tr><td>${escapeHtml(h.type)} (Lv.${escapeHtml(h.level)})</td><td>${escapeHtml(h.increase)}</td></tr>
+        `).join('')}</table>`;
+      }
+
+      // ── Lazy-loaded extra detail sections ────────────────
+      async function loadLostArkDetailExtra() {
+        const extraEl = document.getElementById('detail-extra');
+        if (lostarkDetailData) return renderLostArkExtra(lostarkDetailData);
+
+        extraEl.innerHTML = `
+          <div class="detail-section-title">아크패시브</div><p class="detail-loading">불러오는 중…</p>
+          <div class="detail-section-title">보석</div><p class="detail-loading">불러오는 중…</p>
+          <div class="detail-section-title">전투 스킬</div><p class="detail-loading">불러오는 중…</p>`;
+
+        try {
+          const res = await fetch(`${API_BASE}/api/lostark/${encodeURIComponent(LOSTARK_CHARACTER)}/detail`);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          lostarkDetailData = await res.json();
+          renderLostArkExtra(lostarkDetailData);
+        } catch (err) {
+          extraEl.innerHTML = '<p class="detail-loading">상세 정보를 불러오지 못했습니다.</p>';
+          console.warn('Lost Ark detail error:', err);
+        }
+      }
+
+      function renderLostArkExtra(d) {
+        document.getElementById('detail-extra').innerHTML = `
+          <div class="detail-section-title">아크패시브</div>
+          ${renderArkPassiveBadges(d.arkPassive)}
+          <div class="detail-section-title">보석 (${d.gems?.length || 0})</div>
+          ${renderIconGrid(d.gems)}
+          <div class="detail-section-title">전투 스킬 (${d.skills?.length || 0})</div>
+          ${renderIconGrid(d.skills)}
+        `;
+      }
+
+      async function loadMapleDetailExtra() {
+        const extraEl = document.getElementById('detail-extra');
+        if (mapleDetailData) return renderMapleExtra(mapleDetailData);
+
+        extraEl.innerHTML = `
+          <div class="detail-section-title">장비</div><p class="detail-loading">불러오는 중…</p>
+          <div class="detail-section-title">심볼</div><p class="detail-loading">불러오는 중…</p>
+          <div class="detail-section-title">하이퍼스탯</div><p class="detail-loading">불러오는 중…</p>`;
+
+        try {
+          const res = await fetch(`${API_BASE}/api/maple/${encodeURIComponent(MAPLE_CHARACTER)}/detail`);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          mapleDetailData = await res.json();
+          renderMapleExtra(mapleDetailData);
+        } catch (err) {
+          extraEl.innerHTML = '<p class="detail-loading">상세 정보를 불러오지 못했습니다.</p>';
+          console.warn('MapleStory detail error:', err);
+        }
+      }
+
+      function renderMapleExtra(d) {
+        document.getElementById('detail-extra').innerHTML = `
+          <div class="detail-section-title">장비 (${d.equipment?.length || 0})</div>
+          ${renderIconGrid((d.equipment || []).map((e) => ({ name: e.name, icon: e.icon })))}
+          <div class="detail-section-title">심볼 (${d.symbols?.length || 0})</div>
+          ${renderIconGrid(d.symbols)}
+          <div class="detail-section-title">하이퍼스탯</div>
+          ${renderHyperStatTable(d.hyperStat)}
+        `;
+      }
+
       function populateLostArkDetail() {
         const d = lostarkData;
         document.getElementById('detail-portrait').src = d?.CharacterImage || '';
@@ -353,6 +515,9 @@
         ].join('') : '<p style="color:var(--text-secondary);">불러오는 중…</p>';
 
         document.getElementById('detail-stats').innerHTML = statsHtml;
+        document.getElementById('detail-external-link').href = `https://lopec.kr/character/specPoint/${encodeURIComponent(LOSTARK_CHARACTER)}`;
+        document.getElementById('detail-extra').innerHTML = '';
+        loadLostArkDetailExtra();
       }
 
       function populateMapleDetail() {
@@ -378,6 +543,9 @@
         ].join('') : '<p style="color:var(--text-secondary);">불러오는 중…</p>';
 
         document.getElementById('detail-stats').innerHTML = statsHtml;
+        document.getElementById('detail-external-link').href = `https://maplescouter.com/ko/info?name=${encodeURIComponent(MAPLE_CHARACTER)}`;
+        document.getElementById('detail-extra').innerHTML = '';
+        loadMapleDetailExtra();
       }
 
       // ── FLIP shared-element open/close ──────────────────
