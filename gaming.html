@@ -363,7 +363,7 @@
           const d = await res.json();
           lostarkData = d;
 
-          document.getElementById('lostark-img').src = imgProxy(d.CharacterImage);
+          setImageBlob(document.getElementById('lostark-img'), imgProxy(d.CharacterImage));
           metaEl.textContent = `${d.CharacterClassName || 'MMORPG'} · ${d.CharacterName || LOSTARK_CHARACTER}`;
           document.getElementById('lostark-server').textContent = d.ServerName || '-';
           document.getElementById('lostark-itemlevel').textContent = d.ItemAvgLevel || '-';
@@ -383,7 +383,7 @@
           const d = await res.json();
           mapleData = d;
 
-          if (d.character_image) document.getElementById('maple-img').src = imgProxy(d.character_image);
+          if (d.character_image) setImageBlob(document.getElementById('maple-img'), imgProxy(d.character_image));
           metaEl.textContent = `${d.character_class || 'MMORPG'} · ${d.character_name || MAPLE_CHARACTER}`;
           document.getElementById('maple-world').textContent = d.world_name || '-';
           document.getElementById('maple-level').textContent = d.character_level ? `Lv.${d.character_level}` : '-';
@@ -404,16 +404,38 @@
         return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
       }
 
-      // 일부 방문자 네트워크에서 게임사 CDN 이미지가 바로 안 열려서 우리 서버가 대신 받아옵니다.
+      // 일부 방문자 네트워크/확장 프로그램이 <img src>로 게임사 CDN 이미지를
+      // 바로 여는 걸 막는 경우가 있어서, fetch로 받아 blob URL로 바꿔서 표시합니다.
       function imgProxy(url) {
         return url ? `${API_BASE}/api/img?u=${encodeURIComponent(url)}` : '';
+      }
+
+      async function setImageBlob(imgEl, url) {
+        if (!imgEl || !url) return;
+        try {
+          const res = await fetch(url);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const blob = await res.blob();
+          imgEl.src = URL.createObjectURL(blob);
+        } catch (err) {
+          imgEl.dispatchEvent(new Event('error'));
+        }
+      }
+
+      // container 안의 data-src 속성이 붙은 <img>들을 전부 blob으로 채웁니다.
+      function hydrateImages(container) {
+        container.querySelectorAll('img[data-src]').forEach((img) => {
+          const url = img.dataset.src;
+          delete img.dataset.src;
+          setImageBlob(img, url);
+        });
       }
 
       function renderIconGrid(items, { levelKey = 'level', levelPrefix = 'Lv.' } = {}) {
         if (!items || !items.length) return '<p class="detail-loading">정보 없음</p>';
         return `<div class="detail-icon-grid">${items.map((it) => `
           <div class="detail-icon-item">
-            <img src="${imgProxy(it.icon)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'" />
+            <img data-src="${imgProxy(it.icon)}" alt="" onerror="this.style.visibility='hidden'" />
             <div class="icon-name">${escapeHtml(it.name)}</div>
             ${it[levelKey] != null ? `<div class="icon-lv">${levelPrefix}${escapeHtml(it[levelKey])}</div>` : ''}
           </div>`).join('')}</div>`;
@@ -456,7 +478,8 @@
       }
 
       function renderLostArkExtra(d) {
-        document.getElementById('detail-extra').innerHTML = `
+        const extraEl = document.getElementById('detail-extra');
+        extraEl.innerHTML = `
           <div class="detail-section-title">각인</div>
           ${renderArkPassiveBadges(d.arkPassive)}
           <div class="detail-section-title">보석 ${d.gems?.length || 0}개</div>
@@ -464,6 +487,7 @@
           <div class="detail-section-title">전투 스킬 ${d.skills?.length || 0}개</div>
           ${renderIconGrid(d.skills)}
         `;
+        hydrateImages(extraEl);
       }
 
       async function loadMapleDetailExtra() {
@@ -487,7 +511,8 @@
       }
 
       function renderMapleExtra(d) {
-        document.getElementById('detail-extra').innerHTML = `
+        const extraEl = document.getElementById('detail-extra');
+        extraEl.innerHTML = `
           <div class="detail-section-title">장비 ${d.equipment?.length || 0}개</div>
           ${renderIconGrid((d.equipment || []).map((e) => ({ name: e.name, icon: e.icon })))}
           <div class="detail-section-title">심볼 ${d.symbols?.length || 0}개</div>
@@ -495,11 +520,12 @@
           <div class="detail-section-title">하이퍼스탯</div>
           ${renderHyperStatTable(d.hyperStat)}
         `;
+        hydrateImages(extraEl);
       }
 
       function populateLostArkDetail() {
         const d = lostarkData;
-        document.getElementById('detail-portrait').src = imgProxy(d?.CharacterImage);
+        setImageBlob(document.getElementById('detail-portrait'), imgProxy(d?.CharacterImage));
         document.getElementById('detail-game-tag').textContent = '🗡️ 로스트아크';
         document.getElementById('detail-title').textContent = d?.CharacterName || LOSTARK_CHARACTER;
         document.getElementById('detail-sub').textContent = d
@@ -527,7 +553,7 @@
 
       function populateMapleDetail() {
         const d = mapleData;
-        document.getElementById('detail-portrait').src = imgProxy(d?.character_image);
+        setImageBlob(document.getElementById('detail-portrait'), imgProxy(d?.character_image));
         document.getElementById('detail-game-tag').textContent = '🍁 메이플스토리';
         document.getElementById('detail-title').textContent = d?.character_name || MAPLE_CHARACTER;
         document.getElementById('detail-sub').textContent = d
