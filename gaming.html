@@ -42,6 +42,29 @@
     .stat-row:last-child { border-bottom: none; }
     .stat-row span:first-child { color: var(--text-secondary); }
     .stat-row span:last-child { font-family: var(--font-mono); color: var(--text-primary); font-weight: 600; }
+    .game-portrait {
+      width: 48px; height: 48px;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+      background: rgba(61, 220, 151, 0.08);
+      flex-shrink: 0;
+    }
+    .live-badge {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      font-family: var(--font-mono); font-size: 0.7rem;
+      color: var(--accent-green);
+      background: rgba(61, 220, 151, 0.08);
+      border: 1px solid rgba(61, 220, 151, 0.25);
+      padding: 0.15rem 0.55rem;
+      border-radius: 999px;
+      margin-left: 0.5rem;
+      vertical-align: middle;
+    }
+    .live-badge .dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--accent-green);
+      animation: pulseGlow 2s ease-in-out infinite;
+    }
   </style>
 </head>
 <body>
@@ -67,12 +90,8 @@
       </div>
     </div>
 
-    <!--
-      🚧 스크린샷 보고 아래 stat-row 값(-)들만 실제 수치로 채워주세요.
-      다 채우셨으면 이 안내 배너를 지우면 됩니다.
-    -->
     <div class="placeholder-banner">
-      🚧 게임 3종은 확정, 전적/플레이타임 수치만 채우면 완성입니다.
+      🟢 로스트아크·메이플스토리는 자체 API 서버(<code>api.aionbot.kr</code>)에서 실시간으로 캐릭터 정보를 불러옵니다. 롤은 수동 입력 카드입니다.
     </div>
 
     <section class="section">
@@ -83,30 +102,32 @@
       </div>
 
       <div class="grid-3 reveal-group">
-        <div class="card">
+        <div class="card" id="card-lostark">
           <div class="game-card-head">
-            <div class="game-icon">🗡️</div>
+            <img class="game-portrait" id="lostark-img" alt="로스트아크 캐릭터 이미지" />
             <div>
-              <h3 style="font-size:1.05rem;">로스트아크</h3>
-              <div class="game-meta">MMORPG · PC</div>
+              <h3 style="font-size:1.05rem;">로스트아크<span class="live-badge"><span class="dot"></span>LIVE</span></h3>
+              <div class="game-meta" id="lostark-meta">불러오는 중…</div>
             </div>
           </div>
-          <div class="stat-row"><span>대표 캐릭터/직업</span><span>-</span></div>
-          <div class="stat-row"><span>최고 아이템 레벨</span><span>-</span></div>
-          <div class="stat-row"><span>클리어한 최고 난이도 레이드</span><span>-</span></div>
+          <div class="stat-row"><span>서버</span><span id="lostark-server">-</span></div>
+          <div class="stat-row"><span>아이템 레벨</span><span id="lostark-itemlevel">-</span></div>
+          <div class="stat-row"><span>원정대 레벨</span><span id="lostark-expedition">-</span></div>
+          <div class="stat-row"><span>길드</span><span id="lostark-guild">-</span></div>
         </div>
 
-        <div class="card">
+        <div class="card" id="card-maple">
           <div class="game-card-head">
-            <div class="game-icon">🍁</div>
+            <img class="game-portrait" id="maple-img" alt="메이플스토리 캐릭터 이미지" />
             <div>
-              <h3 style="font-size:1.05rem;">메이플스토리</h3>
-              <div class="game-meta">MMORPG · PC</div>
+              <h3 style="font-size:1.05rem;">메이플스토리<span class="live-badge"><span class="dot"></span>LIVE</span></h3>
+              <div class="game-meta" id="maple-meta">불러오는 중…</div>
             </div>
           </div>
-          <div class="stat-row"><span>대표 캐릭터/직업</span><span>-</span></div>
-          <div class="stat-row"><span>레벨</span><span>-</span></div>
-          <div class="stat-row"><span>인상 깊었던 점</span><span>-</span></div>
+          <div class="stat-row"><span>월드</span><span id="maple-world">-</span></div>
+          <div class="stat-row"><span>레벨</span><span id="maple-level">-</span></div>
+          <div class="stat-row"><span>경험치</span><span id="maple-exp">-</span></div>
+          <div class="stat-row"><span>길드</span><span id="maple-guild">-</span></div>
         </div>
 
         <div class="card">
@@ -157,5 +178,54 @@
   </footer>
 
   <script src="js/main.js"></script>
+  <script>
+    (function () {
+      'use strict';
+      const API_BASE = 'https://api.aionbot.kr';
+      const LOSTARK_CHARACTER = '물설아';
+      const MAPLE_CHARACTER = '트넌지팅럴넌';
+
+      async function loadLostArk() {
+        const metaEl = document.getElementById('lostark-meta');
+        try {
+          const res = await fetch(`${API_BASE}/api/lostark/${encodeURIComponent(LOSTARK_CHARACTER)}`);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const d = await res.json();
+
+          document.getElementById('lostark-img').src = d.CharacterImage || '';
+          metaEl.textContent = `${d.CharacterClassName || 'MMORPG'} · ${d.CharacterName || LOSTARK_CHARACTER}`;
+          document.getElementById('lostark-server').textContent = d.ServerName || '-';
+          document.getElementById('lostark-itemlevel').textContent = d.ItemAvgLevel || '-';
+          document.getElementById('lostark-expedition').textContent = d.ExpeditionLevel ? `Lv.${d.ExpeditionLevel}` : '-';
+          document.getElementById('lostark-guild').textContent = d.GuildName || '-';
+        } catch (err) {
+          metaEl.textContent = '불러오기 실패';
+          console.warn('Lost Ark API error:', err);
+        }
+      }
+
+      async function loadMaple() {
+        const metaEl = document.getElementById('maple-meta');
+        try {
+          const res = await fetch(`${API_BASE}/api/maple/${encodeURIComponent(MAPLE_CHARACTER)}`);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const d = await res.json();
+
+          if (d.character_image) document.getElementById('maple-img').src = d.character_image;
+          metaEl.textContent = `${d.character_class || 'MMORPG'} · ${d.character_name || MAPLE_CHARACTER}`;
+          document.getElementById('maple-world').textContent = d.world_name || '-';
+          document.getElementById('maple-level').textContent = d.character_level ? `Lv.${d.character_level}` : '-';
+          document.getElementById('maple-exp').textContent = d.character_exp_rate ? `${d.character_exp_rate}%` : '-';
+          document.getElementById('maple-guild').textContent = d.character_guild_name || '-';
+        } catch (err) {
+          metaEl.textContent = '불러오기 실패';
+          console.warn('MapleStory API error:', err);
+        }
+      }
+
+      loadLostArk();
+      loadMaple();
+    })();
+  </script>
 </body>
 </html>
