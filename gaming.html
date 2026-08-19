@@ -363,7 +363,7 @@
           const d = await res.json();
           lostarkData = d;
 
-          document.getElementById('lostark-img').src = d.CharacterImage || '';
+          document.getElementById('lostark-img').src = imgProxy(d.CharacterImage);
           metaEl.textContent = `${d.CharacterClassName || 'MMORPG'} · ${d.CharacterName || LOSTARK_CHARACTER}`;
           document.getElementById('lostark-server').textContent = d.ServerName || '-';
           document.getElementById('lostark-itemlevel').textContent = d.ItemAvgLevel || '-';
@@ -383,7 +383,7 @@
           const d = await res.json();
           mapleData = d;
 
-          if (d.character_image) document.getElementById('maple-img').src = d.character_image;
+          if (d.character_image) document.getElementById('maple-img').src = imgProxy(d.character_image);
           metaEl.textContent = `${d.character_class || 'MMORPG'} · ${d.character_name || MAPLE_CHARACTER}`;
           document.getElementById('maple-world').textContent = d.world_name || '-';
           document.getElementById('maple-level').textContent = d.character_level ? `Lv.${d.character_level}` : '-';
@@ -404,11 +404,16 @@
         return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
       }
 
+      // 일부 방문자 네트워크에서 게임사 CDN 이미지가 바로 안 열려서 우리 서버가 대신 받아옵니다.
+      function imgProxy(url) {
+        return url ? `${API_BASE}/api/img?u=${encodeURIComponent(url)}` : '';
+      }
+
       function renderIconGrid(items, { levelKey = 'level', levelPrefix = 'Lv.' } = {}) {
         if (!items || !items.length) return '<p class="detail-loading">정보 없음</p>';
         return `<div class="detail-icon-grid">${items.map((it) => `
           <div class="detail-icon-item">
-            <img src="${it.icon || ''}" alt="" loading="lazy" onerror="this.style.visibility='hidden'" />
+            <img src="${imgProxy(it.icon)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'" />
             <div class="icon-name">${escapeHtml(it.name)}</div>
             ${it[levelKey] != null ? `<div class="icon-lv">${levelPrefix}${escapeHtml(it[levelKey])}</div>` : ''}
           </div>`).join('')}</div>`;
@@ -435,7 +440,7 @@
         if (lostarkDetailData) return renderLostArkExtra(lostarkDetailData);
 
         extraEl.innerHTML = `
-          <div class="detail-section-title">아크패시브</div><p class="detail-loading">불러오는 중…</p>
+          <div class="detail-section-title">각인</div><p class="detail-loading">불러오는 중…</p>
           <div class="detail-section-title">보석</div><p class="detail-loading">불러오는 중…</p>
           <div class="detail-section-title">전투 스킬</div><p class="detail-loading">불러오는 중…</p>`;
 
@@ -452,11 +457,11 @@
 
       function renderLostArkExtra(d) {
         document.getElementById('detail-extra').innerHTML = `
-          <div class="detail-section-title">아크패시브</div>
+          <div class="detail-section-title">각인</div>
           ${renderArkPassiveBadges(d.arkPassive)}
-          <div class="detail-section-title">보석 (${d.gems?.length || 0})</div>
+          <div class="detail-section-title">보석 ${d.gems?.length || 0}개</div>
           ${renderIconGrid(d.gems)}
-          <div class="detail-section-title">전투 스킬 (${d.skills?.length || 0})</div>
+          <div class="detail-section-title">전투 스킬 ${d.skills?.length || 0}개</div>
           ${renderIconGrid(d.skills)}
         `;
       }
@@ -483,9 +488,9 @@
 
       function renderMapleExtra(d) {
         document.getElementById('detail-extra').innerHTML = `
-          <div class="detail-section-title">장비 (${d.equipment?.length || 0})</div>
+          <div class="detail-section-title">장비 ${d.equipment?.length || 0}개</div>
           ${renderIconGrid((d.equipment || []).map((e) => ({ name: e.name, icon: e.icon })))}
-          <div class="detail-section-title">심볼 (${d.symbols?.length || 0})</div>
+          <div class="detail-section-title">심볼 ${d.symbols?.length || 0}개</div>
           ${renderIconGrid(d.symbols)}
           <div class="detail-section-title">하이퍼스탯</div>
           ${renderHyperStatTable(d.hyperStat)}
@@ -494,7 +499,7 @@
 
       function populateLostArkDetail() {
         const d = lostarkData;
-        document.getElementById('detail-portrait').src = d?.CharacterImage || '';
+        document.getElementById('detail-portrait').src = imgProxy(d?.CharacterImage);
         document.getElementById('detail-game-tag').textContent = '🗡️ 로스트아크';
         document.getElementById('detail-title').textContent = d?.CharacterName || LOSTARK_CHARACTER;
         document.getElementById('detail-sub').textContent = d
@@ -522,7 +527,7 @@
 
       function populateMapleDetail() {
         const d = mapleData;
-        document.getElementById('detail-portrait').src = d?.character_image || '';
+        document.getElementById('detail-portrait').src = imgProxy(d?.character_image);
         document.getElementById('detail-game-tag').textContent = '🍁 메이플스토리';
         document.getElementById('detail-title').textContent = d?.character_name || MAPLE_CHARACTER;
         document.getElementById('detail-sub').textContent = d
