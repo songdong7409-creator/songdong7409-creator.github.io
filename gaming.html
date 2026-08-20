@@ -528,29 +528,70 @@
         if (!items || !items.length) return '<p class="detail-loading">정보 없음</p>';
         return `<div class="equip-grid">${items.map((it) => {
           const color = LOSTARK_GRADE_COLOR[it.grade] || 'var(--border)';
+          const meta = [it.itemLevel, it.quality].filter(Boolean).join(' · ');
           return `
           <div class="equip-item">
             <img data-src="${imgProxy(it.icon)}" alt="" style="border-color:${color}88;" onerror="this.style.visibility='hidden'" />
             <div class="equip-slot">${escapeHtml(it.slot)}</div>
             <div class="equip-name" title="${escapeHtml(it.name)}">${escapeHtml(it.name)}</div>
-            <div class="equip-meta">${escapeHtml(it.itemLevel || '')}</div>
+            <div class="equip-meta">${escapeHtml(meta)}</div>
           </div>`;
         }).join('')}</div>`;
+      }
+
+      function optionRowsHtml(options) {
+        return (options || []).map((o) => `
+          <div class="accessory-option-row"><span class="opt-tier">${escapeHtml(o.tier)}</span><span>${escapeHtml(o.text)}</span></div>
+        `).join('');
+      }
+
+      function statRowsHtml(stats) {
+        return (stats || []).map((s) => `
+          <div class="accessory-option-row"><span class="opt-tier">${escapeHtml(s.name)}</span><span>+${escapeHtml(s.value)}</span></div>
+        `).join('');
       }
 
       function renderAccessoryCards(items) {
         if (!items || !items.length) return '<p class="detail-loading">정보 없음</p>';
         return `<div class="accessory-grid">${items.map((it) => {
           const color = LOSTARK_GRADE_COLOR[it.grade] || 'var(--border)';
-          const optionsHtml = (it.options || []).map((o) => `
-            <div class="accessory-option-row"><span class="opt-tier">${escapeHtml(o.tier)}</span><span>${escapeHtml(o.text)}</span></div>
-          `).join('');
+          const img = `<img data-src="${imgProxy(it.icon)}" alt="" style="border-color:${color}88;" onerror="this.style.visibility='hidden'" />`;
+
+          if (it.type === 'stone') {
+            const pointsHtml = (it.engravingPoints || []).map((p) => `
+              <div class="accessory-option-row"><span class="opt-tier">${escapeHtml(p.name)}</span><span>+${escapeHtml(p.value)}</span></div>
+            `).join('');
+            const penaltyHtml = it.penalty
+              ? `<div class="accessory-option-row" style="color:#ff8a80;"><span class="opt-tier">${escapeHtml(it.penalty.name)}</span><span>-${escapeHtml(it.penalty.value)}</span></div>`
+              : '';
+            return `
+            <div class="accessory-card">
+              ${img}
+              <div>
+                <div class="accessory-quality" style="color:${color};">어빌리티 스톤 · ${escapeHtml(it.stoneName || it.grade || '')}</div>
+                ${pointsHtml}${penaltyHtml}
+              </div>
+            </div>`;
+          }
+
+          if (it.type === 'bangle') {
+            return `
+            <div class="accessory-card">
+              ${img}
+              <div>
+                <div class="accessory-quality" style="color:${color};">팔찌 · ${escapeHtml(it.grade || '')}</div>
+                ${statRowsHtml(it.stats)}
+                ${optionRowsHtml(it.options)}
+              </div>
+            </div>`;
+          }
+
           return `
           <div class="accessory-card">
-            <img data-src="${imgProxy(it.icon)}" alt="" style="border-color:${color}88;" onerror="this.style.visibility='hidden'" />
+            ${img}
             <div>
               <div class="accessory-quality" style="color:${color};">${escapeHtml(it.tier || '')} · ${escapeHtml(it.quality || '')}</div>
-              ${optionsHtml}
+              ${optionRowsHtml(it.options)}
             </div>
           </div>`;
         }).join('')}</div>`;
