@@ -375,13 +375,27 @@
         }
       }
 
+      let mapleMaintenance = false;
+
       async function loadMaple() {
         const metaEl = document.getElementById('maple-meta');
         try {
           const res = await fetch(`${API_BASE}/api/maple/${encodeURIComponent(MAPLE_CHARACTER)}`);
+          if (res.status === 503) {
+            const body = await res.json().catch(() => ({}));
+            if (body.error === 'maintenance') {
+              mapleMaintenance = true;
+              metaEl.textContent = '🛠️ 점검 중';
+              ['maple-world', 'maple-level', 'maple-exp', 'maple-guild'].forEach((id) => {
+                document.getElementById(id).textContent = '점검 중';
+              });
+              return;
+            }
+          }
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const d = await res.json();
           mapleData = d;
+          mapleMaintenance = false;
 
           if (d.character_image) setImageBlob(document.getElementById('maple-img'), imgProxy(d.character_image));
           metaEl.textContent = `${d.character_class || 'MMORPG'} · ${d.character_name || MAPLE_CHARACTER}`;
@@ -525,14 +539,24 @@
 
       function populateLostArkDetail() {
         const d = lostarkData;
-        setImageBlob(document.getElementById('detail-portrait'), imgProxy(d?.CharacterImage));
         document.getElementById('detail-game-tag').textContent = '🗡️ 로스트아크';
         document.getElementById('detail-title').textContent = d?.CharacterName || LOSTARK_CHARACTER;
-        document.getElementById('detail-sub').textContent = d
-          ? `${d.ServerName} · ${d.CharacterClassName} · ${d.Title || ''}`
-          : '불러오는 중…';
+        document.getElementById('detail-external-link').href = `https://lopec.kr/character/specPoint/${encodeURIComponent(LOSTARK_CHARACTER)}`;
 
-        const statsHtml = d ? [
+        if (!d) {
+          document.getElementById('detail-sub').textContent = '불러오는 중…';
+          document.getElementById('detail-stats').innerHTML = '<p style="color:var(--text-secondary);">불러오는 중…</p>';
+          document.getElementById('detail-extra').innerHTML = '';
+          loadLostArk().then(() => {
+            if (activeCard === lostarkCard) populateLostArkDetail();
+          });
+          return;
+        }
+
+        setImageBlob(document.getElementById('detail-portrait'), imgProxy(d.CharacterImage));
+        document.getElementById('detail-sub').textContent = `${d.ServerName} · ${d.CharacterClassName} · ${d.Title || ''}`;
+
+        const statsHtml = [
           statRow('서버', d.ServerName),
           statRow('직업', d.CharacterClassName),
           statRow('아이템 레벨', d.ItemAvgLevel),
@@ -543,26 +567,44 @@
           statRow('길드 등급', d.GuildMemberGrade),
           statRow('스킬 포인트', (d.UsingSkillPoint != null && d.TotalSkillPoint != null) ? `${d.UsingSkillPoint} / ${d.TotalSkillPoint}` : '-'),
           statRow('명예 포인트', d.HonorPoint),
-        ].join('') : '<p style="color:var(--text-secondary);">불러오는 중…</p>';
+        ].join('');
 
         document.getElementById('detail-stats').innerHTML = statsHtml;
-        document.getElementById('detail-external-link').href = `https://lopec.kr/character/specPoint/${encodeURIComponent(LOSTARK_CHARACTER)}`;
         document.getElementById('detail-extra').innerHTML = '';
         loadLostArkDetailExtra();
       }
 
       function populateMapleDetail() {
         const d = mapleData;
-        setImageBlob(document.getElementById('detail-portrait'), imgProxy(d?.character_image));
         document.getElementById('detail-game-tag').textContent = '🍁 메이플스토리';
         document.getElementById('detail-title').textContent = d?.character_name || MAPLE_CHARACTER;
-        document.getElementById('detail-sub').textContent = d
-          ? `${d.world_name} · ${d.character_class} · ${d.character_guild_name || '길드 없음'}`
-          : '불러오는 중…';
+        document.getElementById('detail-external-link').href = `https://maplescouter.com/ko/info?name=${encodeURIComponent(MAPLE_CHARACTER)}`;
 
-        const expFormatted = d?.character_exp != null ? Number(d.character_exp).toLocaleString('ko-KR') : null;
+        if (mapleMaintenance) {
+          setImageBlob(document.getElementById('detail-portrait'), '');
+          document.getElementById('detail-sub').textContent = '넥슨 서버 점검 중입니다';
+          document.getElementById('detail-stats').innerHTML = '<p style="color:var(--text-secondary);">🛠️ 점검이 끝나면 자동으로 다시 불러옵니다. 잠시 후 다시 열어봐주세요.</p>';
+          document.getElementById('detail-extra').innerHTML = '';
+          return;
+        }
 
-        const statsHtml = d ? [
+        if (!d) {
+          // 최초 로딩이 실패/지연됐을 수 있으니 다시 시도하고, 이 카드가 여전히 열려있으면 갱신
+          document.getElementById('detail-sub').textContent = '불러오는 중…';
+          document.getElementById('detail-stats').innerHTML = '<p style="color:var(--text-secondary);">불러오는 중…</p>';
+          document.getElementById('detail-extra').innerHTML = '';
+          loadMaple().then(() => {
+            if (activeCard === mapleCard) populateMapleDetail();
+          });
+          return;
+        }
+
+        setImageBlob(document.getElementById('detail-portrait'), imgProxy(d.character_image));
+        document.getElementById('detail-sub').textContent = `${d.world_name} · ${d.character_class} · ${d.character_guild_name || '길드 없음'}`;
+
+        const expFormatted = d.character_exp != null ? Number(d.character_exp).toLocaleString('ko-KR') : null;
+
+        const statsHtml = [
           statRow('월드', d.world_name),
           statRow('직업', `${d.character_class || '-'} (${d.character_class_level || '-'}차)`),
           statRow('레벨', d.character_level),
@@ -571,10 +613,9 @@
           statRow('성별', d.character_gender),
           statRow('길드', d.character_guild_name),
           statRow('해방 퀘스트', d.liberation_quest_clear === 'true' || d.liberation_quest_clear === true ? '완료' : (d.liberation_quest_clear || '-')),
-        ].join('') : '<p style="color:var(--text-secondary);">불러오는 중…</p>';
+        ].join('');
 
         document.getElementById('detail-stats').innerHTML = statsHtml;
-        document.getElementById('detail-external-link').href = `https://maplescouter.com/ko/info?name=${encodeURIComponent(MAPLE_CHARACTER)}`;
         document.getElementById('detail-extra').innerHTML = '';
         loadMapleDetailExtra();
       }
