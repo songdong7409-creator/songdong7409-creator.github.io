@@ -211,6 +211,54 @@
     .detail-table td:first-child { color: var(--text-secondary); }
     .detail-table td:last-child { text-align: right; font-family: var(--font-mono); color: var(--text-primary); }
 
+    /* 로펙에서 가져온 장비/악세서리 (환산점수 등 계산값 제외, 원본 정보만) */
+    .equip-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+      gap: 0.8rem;
+    }
+    .equip-item {
+      display: flex; flex-direction: column; align-items: center; gap: 0.3rem;
+      text-align: center;
+    }
+    .equip-item img {
+      width: 48px; height: 48px;
+      border-radius: 6px; object-fit: cover;
+      background: rgba(255,255,255,0.04);
+      border: 2px solid var(--border);
+    }
+    .equip-item .equip-slot { font-size: 0.66rem; color: var(--text-muted); }
+    .equip-item .equip-name {
+      font-size: 0.7rem; color: var(--text-secondary); line-height: 1.25;
+      max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .equip-item .equip-meta { font-family: var(--font-mono); font-size: 0.66rem; color: var(--text-muted); }
+
+    .accessory-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 0.8rem;
+    }
+    .accessory-card {
+      display: flex; gap: 0.8rem;
+      padding: 0.8rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: rgba(255,255,255,0.02);
+    }
+    .accessory-card img {
+      width: 44px; height: 44px;
+      border-radius: 6px; object-fit: cover;
+      background: rgba(255,255,255,0.04);
+      border: 2px solid var(--border);
+      flex-shrink: 0;
+    }
+    .accessory-card .accessory-quality { font-family: var(--font-mono); font-size: 0.72rem; margin-bottom: 0.3rem; }
+    .accessory-option-row { display: flex; gap: 0.4rem; font-size: 0.76rem; color: var(--text-secondary); margin-bottom: 0.15rem; }
+    .accessory-option-row .opt-tier { font-family: var(--font-mono); color: var(--text-muted); flex-shrink: 0; }
+
+    .badge-icon { width: 16px; height: 16px; border-radius: 4px; object-fit: cover; }
+
     @media (prefers-reduced-motion: reduce) {
       .detail-panel { transition: none !important; }
     }
@@ -348,10 +396,11 @@
       let mapleData = null;
       let lostarkDetailData = null;
       let mapleDetailData = null;
+      let lopecData = null; // 로펙에서 가져온 장비/악세서리/각인아이콘 (환산점수 등은 제외)
 
       const LOSTARK_GRADE_COLOR = {
         '일반': '#b0b0b0', '고급': '#86e08a', '희귀': '#5fb6ff',
-        '영웅': '#c576f6', '전설': '#f6a623', '유물': '#f0522d', '고대': '#e0d0a8',
+        '영웅': '#c576f6', '전설': '#f6a623', '유물': '#f0522d', '고대': '#e0d0a8', '에스더': '#ff8fc7',
       };
 
       // ── Load summary cards ──────────────────────────────
@@ -455,11 +504,13 @@
           </div>`).join('')}</div>`;
       }
 
-      function renderArkPassiveBadges(items) {
+      function renderArkPassiveBadges(items, icons) {
         if (!items || !items.length) return '<p class="detail-loading">정보 없음</p>';
         return `<div class="detail-badge-list">${items.map((it) => {
           const color = LOSTARK_GRADE_COLOR[it.grade] || 'var(--text-secondary)';
-          return `<span class="detail-badge" style="border-color:${color}55;color:${color};">${escapeHtml(it.name)}<span class="badge-lv">Lv.${escapeHtml(it.level)}</span></span>`;
+          const icon = icons && icons[it.name];
+          const iconHtml = icon ? `<img class="badge-icon" data-src="${imgProxy(icon)}" alt="" onerror="this.style.visibility='hidden'" />` : '';
+          return `<span class="detail-badge" style="border-color:${color}55;color:${color};">${iconHtml}${escapeHtml(it.name)}<span class="badge-lv">Lv.${escapeHtml(it.level)}</span></span>`;
         }).join('')}</div>`;
       }
 
@@ -470,36 +521,90 @@
         `).join('')}</table>`;
       }
 
+      // ── 로펙(lopec.kr)에서 가져온 장비/악세서리 렌더링 ─────
+      // 환산점수·전투력·랭킹 등 그쪽 자체 계산값은 절대 안 씀 — 아이템 이름·품질·옵션 같은
+      // 원본 게임 정보만 그대로 옮긴다.
+      function renderEquipmentGrid(items) {
+        if (!items || !items.length) return '<p class="detail-loading">정보 없음</p>';
+        return `<div class="equip-grid">${items.map((it) => {
+          const color = LOSTARK_GRADE_COLOR[it.grade] || 'var(--border)';
+          return `
+          <div class="equip-item">
+            <img data-src="${imgProxy(it.icon)}" alt="" style="border-color:${color}88;" onerror="this.style.visibility='hidden'" />
+            <div class="equip-slot">${escapeHtml(it.slot)}</div>
+            <div class="equip-name" title="${escapeHtml(it.name)}">${escapeHtml(it.name)}</div>
+            <div class="equip-meta">${escapeHtml(it.itemLevel || '')}</div>
+          </div>`;
+        }).join('')}</div>`;
+      }
+
+      function renderAccessoryCards(items) {
+        if (!items || !items.length) return '<p class="detail-loading">정보 없음</p>';
+        return `<div class="accessory-grid">${items.map((it) => {
+          const color = LOSTARK_GRADE_COLOR[it.grade] || 'var(--border)';
+          const optionsHtml = (it.options || []).map((o) => `
+            <div class="accessory-option-row"><span class="opt-tier">${escapeHtml(o.tier)}</span><span>${escapeHtml(o.text)}</span></div>
+          `).join('');
+          return `
+          <div class="accessory-card">
+            <img data-src="${imgProxy(it.icon)}" alt="" style="border-color:${color}88;" onerror="this.style.visibility='hidden'" />
+            <div>
+              <div class="accessory-quality" style="color:${color};">${escapeHtml(it.tier || '')} · ${escapeHtml(it.quality || '')}</div>
+              ${optionsHtml}
+            </div>
+          </div>`;
+        }).join('')}</div>`;
+      }
+
       // ── Lazy-loaded extra detail sections ────────────────
       async function loadLostArkDetailExtra() {
         const extraEl = document.getElementById('detail-extra');
-        if (lostarkDetailData) return renderLostArkExtra(lostarkDetailData);
+        if (lostarkDetailData) return renderLostArkExtra(lostarkDetailData, lopecData);
 
         extraEl.innerHTML = `
           <div class="detail-section-title">각인</div><p class="detail-loading">불러오는 중…</p>
           <div class="detail-section-title">보석</div><p class="detail-loading">불러오는 중…</p>
-          <div class="detail-section-title">전투 스킬</div><p class="detail-loading">불러오는 중…</p>`;
+          <div class="detail-section-title">전투 스킬</div><p class="detail-loading">불러오는 중…</p>
+          <div class="detail-section-title">장비</div><p class="detail-loading">불러오는 중…</p>
+          <div class="detail-section-title">악세서리</div><p class="detail-loading">불러오는 중…</p>`;
 
-        try {
-          const res = await fetch(`${API_BASE}/api/lostark/${encodeURIComponent(LOSTARK_CHARACTER)}/detail`);
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          lostarkDetailData = await res.json();
-          renderLostArkExtra(lostarkDetailData);
-        } catch (err) {
+        const [detailRes, lopecRes] = await Promise.allSettled([
+          fetch(`${API_BASE}/api/lostark/${encodeURIComponent(LOSTARK_CHARACTER)}/detail`).then((r) => {
+            if (!r.ok) throw new Error(`HTTP ${r.status}`);
+            return r.json();
+          }),
+          fetch(`${API_BASE}/api/lostark/${encodeURIComponent(LOSTARK_CHARACTER)}/lopec`).then((r) => {
+            if (!r.ok) throw new Error(`HTTP ${r.status}`);
+            return r.json();
+          }),
+        ]);
+
+        if (detailRes.status !== 'fulfilled') {
           extraEl.innerHTML = '<p class="detail-loading">상세 정보를 불러오지 못했습니다.</p>';
-          console.warn('Lost Ark detail error:', err);
+          console.warn('Lost Ark detail error:', detailRes.reason);
+          return;
         }
+
+        lostarkDetailData = detailRes.value;
+        lopecData = lopecRes.status === 'fulfilled' ? lopecRes.value : null;
+        if (lopecRes.status !== 'fulfilled') console.warn('lopec fetch failed:', lopecRes.reason);
+
+        renderLostArkExtra(lostarkDetailData, lopecData);
       }
 
-      function renderLostArkExtra(d) {
+      function renderLostArkExtra(d, lopec) {
         const extraEl = document.getElementById('detail-extra');
         extraEl.innerHTML = `
           <div class="detail-section-title">각인</div>
-          ${renderArkPassiveBadges(d.arkPassive)}
+          ${renderArkPassiveBadges(d.arkPassive, lopec?.engravingIcons)}
           <div class="detail-section-title">보석 ${d.gems?.length || 0}개</div>
           ${renderIconGrid(d.gems)}
           <div class="detail-section-title">전투 스킬 ${d.skills?.length || 0}개</div>
           ${renderIconGrid(d.skills)}
+          <div class="detail-section-title">장비 ${lopec?.equipment?.length || 0}개</div>
+          ${lopec ? renderEquipmentGrid(lopec.equipment) : '<p class="detail-loading">불러오지 못했습니다 (로펙)</p>'}
+          <div class="detail-section-title">악세서리 ${lopec?.accessories?.length || 0}개</div>
+          ${lopec ? renderAccessoryCards(lopec.accessories) : '<p class="detail-loading">불러오지 못했습니다 (로펙)</p>'}
         `;
         hydrateImages(extraEl);
       }
