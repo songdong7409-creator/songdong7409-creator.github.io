@@ -1240,6 +1240,12 @@
         uploadPendingFile = null;
       }
 
+      // HTTP 헤더 값은 영문/숫자/기호(ISO-8859-1)만 허용돼서, 비번에 한글 등이 섞이면
+      // fetch()가 브라우저 단에서 바로 에러를 던진다 — 미리 걸러서 이해하기 쉬운 메시지로 안내.
+      function isHeaderSafe(str) {
+        return /^[\x00-\xFF]*$/.test(str);
+      }
+
       async function submitMomentUpload() {
         const statusEl = document.getElementById('moments-upload-status');
         const title = document.getElementById('moments-title-input').value.trim();
@@ -1250,6 +1256,11 @@
         if (!uploadPendingFile) { statusEl.textContent = '이미지를 다시 선택해주세요.'; statusEl.classList.add('is-error'); return; }
         if (!title) { statusEl.textContent = '제목을 입력해주세요.'; statusEl.classList.add('is-error'); return; }
         if (!password) { statusEl.textContent = '업로드 비밀번호를 입력해주세요.'; statusEl.classList.add('is-error'); return; }
+        if (!isHeaderSafe(password)) {
+          statusEl.textContent = '비밀번호에 한글/특수문자가 섞인 것 같아요. 영문·숫자로만 다시 입력해주세요.';
+          statusEl.classList.add('is-error');
+          return;
+        }
 
         const btn = document.getElementById('moments-submit-btn');
         btn.disabled = true;
@@ -1288,6 +1299,10 @@
         const saved = sessionStorage.getItem('momentsUploadPw');
         const password = saved || window.prompt('삭제하려면 업로드 비밀번호를 입력하세요');
         if (!password) return;
+        if (!isHeaderSafe(password)) {
+          alert('비밀번호에 한글/특수문자가 섞인 것 같아요. 영문·숫자로만 다시 입력해주세요.');
+          return;
+        }
         try {
           const res = await fetch(`${API_BASE}/api/moments/${id}`, {
             method: 'DELETE',
