@@ -21,7 +21,6 @@
       border-radius: var(--radius-sm);
       color: var(--accent-blue);
       font-size: 0.88rem;
-      font-family: var(--font-mono);
     }
     .game-card-head {
       display: flex;
@@ -37,11 +36,11 @@
       font-size: 1.4rem;
       flex-shrink: 0;
     }
-    .game-meta { font-size: 0.82rem; color: var(--text-muted); font-family: var(--font-mono); }
+    .game-meta { font-size: 0.82rem; color: var(--text-muted); }
     .stat-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
     .stat-row:last-child { border-bottom: none; }
     .stat-row span:first-child { color: var(--text-secondary); }
-    .stat-row span:last-child { font-family: var(--font-mono); color: var(--text-primary); font-weight: 600; text-align: right; }
+    .stat-row span:last-child { color: var(--text-primary); font-weight: 700; text-align: right; }
     .game-portrait {
       width: 48px; height: 48px;
       border-radius: var(--radius-sm);
@@ -79,7 +78,6 @@
       margin-top: 1rem;
       font-size: 0.78rem;
       color: var(--text-muted);
-      font-family: var(--font-mono);
       text-align: right;
     }
 
@@ -138,7 +136,7 @@
       flex-shrink: 0;
     }
     .detail-game-tag {
-      font-family: var(--font-mono); font-size: 0.75rem;
+      font-size: 0.75rem; font-weight: 700;
       color: var(--accent-green); margin-bottom: 0.3rem;
     }
     .detail-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.3rem; }
@@ -153,7 +151,7 @@
     .detail-external-link {
       display: inline-flex; align-items: center; gap: 0.4rem;
       margin-top: 0.6rem;
-      font-family: var(--font-mono); font-size: 0.78rem;
+      font-size: 0.78rem; font-weight: 500;
       color: var(--accent-blue);
       border: 1px solid rgba(79, 176, 255, 0.3);
       background: rgba(79, 176, 255, 0.08);
@@ -163,13 +161,13 @@
     .detail-external-link:hover { border-color: var(--accent-blue); background: rgba(79, 176, 255, 0.14); }
 
     .detail-section-title {
-      font-family: var(--font-mono); font-size: 0.78rem;
-      color: var(--accent-blue); text-transform: uppercase; letter-spacing: 0.06em;
+      font-size: 0.85rem; font-weight: 700;
+      color: var(--accent-blue); letter-spacing: 0.02em;
       margin: 2rem 0 0.9rem;
       padding-bottom: 0.5rem;
       border-bottom: 1px solid var(--border);
     }
-    .detail-loading { color: var(--text-muted); font-size: 0.85rem; font-family: var(--font-mono); }
+    .detail-loading { color: var(--text-muted); font-size: 0.85rem; }
 
     .detail-icon-grid {
       display: grid;
@@ -187,7 +185,7 @@
       border: 1px solid var(--border);
     }
     .detail-icon-item .icon-lv {
-      font-family: var(--font-mono); font-size: 0.66rem; color: var(--text-muted);
+      font-size: 0.66rem; font-weight: 500; color: var(--text-muted);
     }
     .detail-icon-item .icon-name {
       font-size: 0.68rem; color: var(--text-secondary); line-height: 1.25;
@@ -210,16 +208,16 @@
       border: 1px solid var(--border);
       background: rgba(255,255,255,0.03);
     }
-    .detail-badge .badge-lv { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); }
+    .detail-badge .badge-lv { font-size: 0.7rem; font-weight: 600; color: var(--text-muted); }
 
     .detail-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
     .detail-table td { padding: 0.4rem 0.5rem; border-bottom: 1px solid var(--border); }
     .detail-table td:first-child { color: var(--text-secondary); }
-    .detail-table td:last-child { text-align: right; font-family: var(--font-mono); color: var(--text-primary); }
+    .detail-table td:last-child { text-align: right; font-weight: 700; color: var(--text-primary); }
 
     .gem-effect-badge {
       display: inline-block;
-      font-family: var(--font-mono); font-size: 0.66rem; font-weight: 700;
+      font-size: 0.66rem; font-weight: 700;
       padding: 0.05rem 0.4rem;
       border-radius: 4px;
       margin-right: 0.5rem;
@@ -251,7 +249,7 @@
       font-size: 0.7rem; color: var(--text-secondary); line-height: 1.25;
       max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
-    .equip-item .equip-meta { font-family: var(--font-mono); font-size: 0.66rem; color: var(--text-muted); }
+    .equip-item .equip-meta { font-size: 0.66rem; font-weight: 500; color: var(--text-muted); }
 
     .accessory-grid {
       display: grid;
@@ -272,10 +270,10 @@
       border: 2px solid var(--border);
       flex-shrink: 0;
     }
-    .accessory-card .accessory-quality { font-family: var(--font-mono); font-size: 0.72rem; margin-bottom: 0.3rem; }
+    .accessory-card .accessory-quality { font-size: 0.72rem; font-weight: 700; margin-bottom: 0.3rem; }
     .accessory-option-row { display: flex; align-items: center; gap: 0.4rem; font-size: 0.76rem; color: var(--text-secondary); margin-bottom: 0.2rem; }
     .accessory-option-row .opt-tier {
-      font-family: var(--font-mono); font-size: 0.68rem; font-weight: 700;
+      font-size: 0.68rem; font-weight: 700;
       color: #fff; flex-shrink: 0;
       padding: 0.05rem 0.4rem;
       border-radius: 4px;
