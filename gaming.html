@@ -217,6 +217,19 @@
     .detail-table td:first-child { color: var(--text-secondary); }
     .detail-table td:last-child { text-align: right; font-family: var(--font-mono); color: var(--text-primary); }
 
+    .gem-effect-badge {
+      display: inline-block;
+      font-family: var(--font-mono); font-size: 0.66rem; font-weight: 700;
+      padding: 0.05rem 0.4rem;
+      border-radius: 4px;
+      margin-right: 0.5rem;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-muted);
+    }
+    .gem-effect-badge.is-active { color: var(--accent-green); background: rgba(61, 220, 151, 0.15); }
+    .gem-effect-table tr.gem-effect-inactive td { color: var(--text-muted); }
+    .gem-effect-table tr.gem-effect-inactive td:last-child { color: var(--text-muted); }
+
     /* 로펙에서 가져온 장비/악세서리 (환산점수 등 계산값 제외, 원본 정보만) */
     .equip-grid {
       display: grid;
@@ -631,6 +644,20 @@
           </div>`).join('')}</div>`;
       }
 
+      // 젬 누적 효과 — 실제 적용되는 상위 효과(active)와 상한 초과로 버려지는 효과를 구분해서 보여준다.
+      function renderArkgridGemEffects(items) {
+        if (!items || !items.length) return '<p class="detail-loading">정보 없음</p>';
+        return `<table class="detail-table gem-effect-table">${items.map((it) => `
+          <tr class="${it.active ? '' : 'gem-effect-inactive'}">
+            <td>
+              <span class="gem-effect-badge ${it.active ? 'is-active' : ''}">${it.active ? '적용' : '초과'}</span>
+              ${escapeHtml(it.name)}
+            </td>
+            <td>${escapeHtml(it.value)}</td>
+          </tr>
+        `).join('')}</table>`;
+      }
+
       // ── Lazy-loaded extra detail sections ────────────────
       async function loadLostArkDetailExtra() {
         const extraEl = document.getElementById('detail-extra');
@@ -642,7 +669,8 @@
           <div class="detail-section-title">전투 스킬</div><p class="detail-loading">불러오는 중…</p>
           <div class="detail-section-title">장비</div><p class="detail-loading">불러오는 중…</p>
           <div class="detail-section-title">악세서리</div><p class="detail-loading">불러오는 중…</p>
-          <div class="detail-section-title">아크그리드</div><p class="detail-loading">불러오는 중…</p>`;
+          <div class="detail-section-title">아크그리드</div><p class="detail-loading">불러오는 중…</p>
+          <div class="detail-section-title">젬 누적 효과</div><p class="detail-loading">불러오는 중…</p>`;
 
         const [detailRes, lopecRes] = await Promise.allSettled([
           fetch(`${API_BASE}/api/lostark/${encodeURIComponent(LOSTARK_CHARACTER)}/detail`).then((r) => {
@@ -683,6 +711,8 @@
           ${lopec ? renderAccessoryCards(lopec.accessories) : '<p class="detail-loading">불러오지 못했습니다 (로펙)</p>'}
           <div class="detail-section-title">아크그리드</div>
           ${lopec ? renderArkgridCores(lopec.arkgridCores) : '<p class="detail-loading">불러오지 못했습니다 (로펙)</p>'}
+          <div class="detail-section-title">젬 누적 효과</div>
+          ${lopec ? renderArkgridGemEffects(lopec.arkgridGemEffects) : '<p class="detail-loading">불러오지 못했습니다 (로펙)</p>'}
         `;
         hydrateImages(extraEl);
       }
