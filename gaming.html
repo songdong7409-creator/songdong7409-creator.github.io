@@ -103,7 +103,7 @@
       overflow-y: auto;
       transform-origin: top left;
       padding: 2.5rem;
-      max-width: 720px;
+      max-width: 860px;
       margin: 0 auto;
       left: 0; right: 0;
     }
@@ -260,8 +260,18 @@
       flex-shrink: 0;
     }
     .accessory-card .accessory-quality { font-family: var(--font-mono); font-size: 0.72rem; margin-bottom: 0.3rem; }
-    .accessory-option-row { display: flex; gap: 0.4rem; font-size: 0.76rem; color: var(--text-secondary); margin-bottom: 0.15rem; }
-    .accessory-option-row .opt-tier { font-family: var(--font-mono); color: var(--text-muted); flex-shrink: 0; }
+    .accessory-option-row { display: flex; align-items: center; gap: 0.4rem; font-size: 0.76rem; color: var(--text-secondary); margin-bottom: 0.2rem; }
+    .accessory-option-row .opt-tier {
+      font-family: var(--font-mono); font-size: 0.68rem; font-weight: 700;
+      color: #fff; flex-shrink: 0;
+      padding: 0.05rem 0.4rem;
+      border-radius: 4px;
+      background: var(--text-muted);
+    }
+    /* 로펙 실측 색상: 상 금색 / 중 보라 / 하 파랑 */
+    .accessory-option-row .opt-tier.tier-high { background: #d2a50a; }
+    .accessory-option-row .opt-tier.tier-mid  { background: #8b5cf6; }
+    .accessory-option-row .opt-tier.tier-low  { background: #2563eb; }
 
     .badge-icon { width: 16px; height: 16px; border-radius: 4px; object-fit: cover; }
 
@@ -545,9 +555,17 @@
         }).join('')}</div>`;
       }
 
+      // 로펙 실측 색상 기준: 상 금색 / 중 보라 / 하 파랑
+      function tierClass(tier) {
+        if (tier === '상') return 'tier-high';
+        if (tier === '중') return 'tier-mid';
+        if (tier === '하') return 'tier-low';
+        return '';
+      }
+
       function optionRowsHtml(options) {
         return (options || []).map((o) => `
-          <div class="accessory-option-row"><span class="opt-tier">${escapeHtml(o.tier)}</span><span>${escapeHtml(o.text)}</span></div>
+          <div class="accessory-option-row"><span class="opt-tier ${tierClass(o.tier)}">${escapeHtml(o.tier)}</span><span>${escapeHtml(o.text)}</span></div>
         `).join('');
       }
 
