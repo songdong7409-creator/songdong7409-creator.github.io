@@ -195,16 +195,22 @@
       white-space: nowrap;
     }
 
-    .detail-badge-list { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .detail-badge-list {
+      display: flex; flex-wrap: nowrap; gap: 0.4rem;
+      overflow-x: auto;
+      padding-bottom: 0.2rem; /* room for scrollbar without clipping badges */
+    }
     .detail-badge {
-      display: inline-flex; align-items: center; gap: 0.35rem;
-      padding: 0.35rem 0.7rem;
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      padding: 0.3rem 0.6rem;
       border-radius: 6px;
-      font-size: 0.8rem;
+      font-size: 0.76rem;
+      white-space: nowrap;
+      flex-shrink: 0;
       border: 1px solid var(--border);
       background: rgba(255,255,255,0.03);
     }
-    .detail-badge .badge-lv { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); }
+    .detail-badge .badge-lv { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); }
 
     .detail-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
     .detail-table td { padding: 0.4rem 0.5rem; border-bottom: 1px solid var(--border); }
