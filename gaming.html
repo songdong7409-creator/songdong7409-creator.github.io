@@ -286,6 +286,171 @@
 
     .badge-icon { width: 16px; height: 16px; border-radius: 4px; object-fit: cover; }
 
+    /* ── Moments (사진 라이브러리) ─────────────────────────── */
+    .section-title { display: flex; align-items: center; justify-content: center; gap: 0.7rem; }
+
+    .moments-upload-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 40px; height: 40px;
+      font-size: 1.15rem;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .moments-upload-btn:hover { border-color: var(--accent-green); background: rgba(61, 220, 151, 0.08); transform: translateY(-1px); }
+
+    .moments-dropzone {
+      position: relative;
+      border: 2px dashed transparent;
+      border-radius: var(--radius-md);
+      transition: border-color 0.2s ease, background 0.2s ease;
+      min-height: 80px;
+    }
+    .moments-dropzone.drag-over {
+      border-color: var(--accent-green);
+      background: rgba(61, 220, 151, 0.04);
+    }
+    .moments-drop-overlay {
+      display: none;
+      position: absolute; inset: 0;
+      align-items: center; justify-content: center;
+      font-weight: 700; color: var(--accent-green);
+      background: rgba(10, 13, 12, 0.85);
+      border-radius: var(--radius-md);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .moments-dropzone.drag-over .moments-drop-overlay { display: flex; }
+
+    .moments-empty {
+      display: none;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.92rem;
+      padding: 2.5rem 1.5rem;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-md);
+    }
+
+    .moments-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1.2rem;
+    }
+    .moment-card {
+      cursor: pointer;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      transition: var(--transition);
+    }
+    .moment-card:hover { border-color: var(--border-accent); transform: translateY(-3px); box-shadow: var(--shadow-glow); }
+    .moment-thumb {
+      width: 100%; aspect-ratio: 4 / 3;
+      object-fit: cover;
+      background: rgba(255,255,255,0.04);
+      display: block;
+    }
+    .moment-card-title {
+      padding: 0.7rem 0.9rem;
+      font-size: 0.9rem; font-weight: 700;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    /* 업로드 폼 */
+    .moments-upload-overlay {
+      position: fixed; inset: 0; z-index: 2100;
+      display: none;
+      align-items: center; justify-content: center;
+      background: rgba(5, 8, 7, 0.72);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      padding: 1.5rem;
+    }
+    .moments-upload-overlay.open { display: flex; }
+    .moments-upload-panel {
+      position: relative;
+      width: 100%; max-width: 420px;
+      max-height: 90vh; overflow-y: auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border-accent);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      padding: 2rem;
+      animation: fadeInUp 0.25s ease both;
+    }
+    .moments-panel-title { font-size: 1.15rem; font-weight: 800; margin-bottom: 1.1rem; }
+    .moments-preview {
+      width: 100%; max-height: 220px; object-fit: contain;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      margin-bottom: 1rem;
+    }
+    .moments-input {
+      width: 100%;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.7rem 0.9rem;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 0.92rem;
+      margin-bottom: 0.7rem;
+    }
+    .moments-input:focus { outline: none; border-color: var(--accent-green); }
+    .moments-textarea { min-height: 90px; resize: vertical; }
+    .moments-upload-status { font-size: 0.85rem; min-height: 1.2rem; margin-bottom: 0.6rem; color: var(--text-secondary); }
+    .moments-upload-status.is-success { color: var(--accent-green); }
+    .moments-upload-status.is-error { color: #ff8a80; }
+    .moments-submit-btn { width: 100%; justify-content: center; }
+    .moments-submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* 라이트박스 */
+    .moments-lightbox {
+      position: fixed; inset: 0; z-index: 2100;
+      display: none;
+      background: rgba(5, 8, 7, 0.9);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .moments-lightbox.open { display: block; }
+    .moments-lightbox-inner {
+      max-width: 1000px; margin: 0 auto;
+      height: 100%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 1.2rem;
+      padding: 4rem 1.5rem 2rem;
+    }
+    .moments-lightbox-img {
+      max-width: 100%; max-height: 60vh;
+      object-fit: contain;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+    }
+    .moments-lightbox-info { text-align: center; max-width: 600px; }
+    .moments-lightbox-info h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 0.5rem; }
+    .moments-lightbox-info p { color: var(--text-secondary); font-size: 0.95rem; white-space: pre-wrap; margin-bottom: 0.6rem; }
+    .moments-lightbox-date { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 1rem; }
+    .moments-delete-btn {
+      font-size: 0.8rem;
+      color: #ff8a80;
+      background: rgba(255, 95, 87, 0.08);
+      border: 1px solid rgba(255, 95, 87, 0.3);
+      padding: 0.4rem 0.9rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+    }
+    .moments-delete-btn:hover { background: rgba(255, 95, 87, 0.16); }
+
+    @media (max-width: 640px) {
+      .moments-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.8rem; }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       .detail-panel { transition: none !important; }
     }
@@ -358,26 +523,52 @@
       </div>
     </section>
 
-    <!-- ── ACHIEVEMENTS ─────────────────────────────────── -->
+    <!-- ── MOMENTS (사진 라이브러리) ─────────────────────── -->
     <section class="section">
       <div class="section-header">
         <span class="section-tag">// Highlights</span>
-        <h2 class="section-title">기억에 남는 순간</h2>
-        <p class="section-desc">대회 참가, 인상적인 클리어, 특별한 기록 등을 자유롭게 채워보세요.</p>
+        <h2 class="section-title">
+          기억에 남는 순간
+          <button class="moments-upload-btn" id="moments-upload-btn" type="button" title="사진 추가" aria-label="사진 추가">📸</button>
+        </h2>
+        <p class="section-desc">대회 참가, 인상적인 클리어, 특별한 기록을 사진으로 남깁니다.</p>
       </div>
 
-      <div class="timeline">
-        <div class="timeline-item">
-          <div class="timeline-dot"></div>
-          <div class="timeline-date">202X. 0X</div>
-          <div class="timeline-title">[성과/기록 제목을 입력하세요]</div>
-          <p class="timeline-desc">[어떤 상황이었고 어떤 결과였는지 간단히 적어주세요. 예: 특정 시즌 최고 티어 달성, 커뮤니티 대회 참가, 인상적인 협동 클리어 등]</p>
-          <div class="timeline-tags">
-            <span class="tag">태그 예시</span>
-          </div>
-        </div>
+      <div class="moments-dropzone" id="moments-dropzone">
+        <div class="moments-grid" id="moments-grid"></div>
+        <p class="moments-empty" id="moments-empty">아직 등록된 순간이 없습니다. 위 📸 버튼을 누르거나, 사진을 이 영역에 드래그해서 놓아보세요.</p>
+        <div class="moments-drop-overlay" id="moments-drop-overlay">여기에 놓으면 바로 업로드됩니다 📸</div>
       </div>
+      <input type="file" id="moments-file-input" accept="image/png,image/jpeg,image/webp,image/gif" hidden />
     </section>
+  </div>
+
+  <!-- ── Moments 업로드 폼 ─────────────────────────────────── -->
+  <div class="moments-upload-overlay" id="moments-upload-overlay" aria-hidden="true">
+    <div class="moments-upload-panel">
+      <button class="detail-close" id="moments-upload-close" aria-label="닫기">✕</button>
+      <h3 class="moments-panel-title">새 순간 추가</h3>
+      <img class="moments-preview" id="moments-preview-img" alt="선택한 사진 미리보기" />
+      <input type="text" class="moments-input" id="moments-title-input" placeholder="제목" maxlength="80" />
+      <textarea class="moments-input moments-textarea" id="moments-content-input" placeholder="어떤 순간이었는지 적어주세요" maxlength="1000"></textarea>
+      <input type="password" class="moments-input" id="moments-password-input" placeholder="업로드 비밀번호" autocomplete="off" />
+      <div class="moments-upload-status" id="moments-upload-status"></div>
+      <button class="btn btn-primary moments-submit-btn" id="moments-submit-btn" type="button">게시</button>
+    </div>
+  </div>
+
+  <!-- ── Moments 라이트박스 ───────────────────────────────── -->
+  <div class="moments-lightbox" id="moments-lightbox" aria-hidden="true">
+    <button class="detail-close" id="moments-lightbox-close" aria-label="닫기">✕</button>
+    <div class="moments-lightbox-inner">
+      <img class="moments-lightbox-img" id="moments-lightbox-img" alt="" />
+      <div class="moments-lightbox-info">
+        <h3 id="moments-lightbox-title"></h3>
+        <p id="moments-lightbox-content"></p>
+        <div class="moments-lightbox-date" id="moments-lightbox-date"></div>
+        <button class="moments-delete-btn" id="moments-lightbox-delete" type="button">삭제</button>
+      </div>
+    </div>
   </div>
 
   <!-- ── Detail overlay ───────────────────────────────────── -->
@@ -959,8 +1150,211 @@
         if (e.key === 'Escape' && overlay.classList.contains('open')) closeDetail();
       });
 
+      // ── Moments (기억에 남는 순간 — 사진 라이브러리) ──────────────
+      let momentsCache = [];
+      let uploadPendingFile = null;
+      let deleteTargetId = null;
+
+      async function loadMoments() {
+        const empty = document.getElementById('moments-empty');
+        try {
+          const res = await fetch(`${API_BASE}/api/moments`);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          momentsCache = await res.json();
+          renderMomentsGrid();
+        } catch (err) {
+          momentsCache = [];
+          empty.textContent = '순간을 불러오지 못했습니다. 잠시 후 새로고침해주세요.';
+          empty.style.display = 'block';
+          console.warn('moments load error:', err);
+        }
+      }
+
+      function renderMomentsGrid() {
+        const grid = document.getElementById('moments-grid');
+        const empty = document.getElementById('moments-empty');
+        if (!momentsCache.length) {
+          grid.innerHTML = '';
+          empty.style.display = 'block';
+          return;
+        }
+        empty.style.display = 'none';
+        grid.innerHTML = momentsCache.map((m, i) => `
+          <div class="moment-card" data-index="${i}" role="button" tabindex="0" aria-label="${escapeHtml(m.title)} 크게 보기">
+            <img class="moment-thumb" data-src="${API_BASE}${m.image}" alt="${escapeHtml(m.title)}" />
+            <div class="moment-card-title">${escapeHtml(m.title)}</div>
+          </div>
+        `).join('');
+        hydrateImages(grid);
+        grid.querySelectorAll('.moment-card').forEach((card) => {
+          const open = () => openLightbox(momentsCache[Number(card.dataset.index)]);
+          card.addEventListener('click', open);
+          card.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+          });
+        });
+      }
+
+      function openLightbox(moment) {
+        const lb = document.getElementById('moments-lightbox');
+        document.getElementById('moments-lightbox-title').textContent = moment.title;
+        document.getElementById('moments-lightbox-content').textContent = moment.content || '';
+        document.getElementById('moments-lightbox-date').textContent =
+          new Date(moment.createdAt).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
+        setImageBlob(document.getElementById('moments-lightbox-img'), `${API_BASE}${moment.image}`);
+        deleteTargetId = moment.id;
+        lb.classList.add('open');
+        lb.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeLightbox() {
+        const lb = document.getElementById('moments-lightbox');
+        lb.classList.remove('open');
+        lb.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        deleteTargetId = null;
+      }
+
+      function openUploadForm(file) {
+        uploadPendingFile = file;
+        document.getElementById('moments-preview-img').src = URL.createObjectURL(file);
+        document.getElementById('moments-title-input').value = '';
+        document.getElementById('moments-content-input').value = '';
+        document.getElementById('moments-password-input').value = sessionStorage.getItem('momentsUploadPw') || '';
+        const statusEl = document.getElementById('moments-upload-status');
+        statusEl.textContent = '';
+        statusEl.className = 'moments-upload-status';
+
+        const overlay = document.getElementById('moments-upload-overlay');
+        overlay.classList.add('open');
+        overlay.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeUploadForm() {
+        const overlay = document.getElementById('moments-upload-overlay');
+        overlay.classList.remove('open');
+        overlay.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        uploadPendingFile = null;
+      }
+
+      async function submitMomentUpload() {
+        const statusEl = document.getElementById('moments-upload-status');
+        const title = document.getElementById('moments-title-input').value.trim();
+        const content = document.getElementById('moments-content-input').value.trim();
+        const password = document.getElementById('moments-password-input').value;
+
+        statusEl.className = 'moments-upload-status';
+        if (!uploadPendingFile) { statusEl.textContent = '이미지를 다시 선택해주세요.'; statusEl.classList.add('is-error'); return; }
+        if (!title) { statusEl.textContent = '제목을 입력해주세요.'; statusEl.classList.add('is-error'); return; }
+        if (!password) { statusEl.textContent = '업로드 비밀번호를 입력해주세요.'; statusEl.classList.add('is-error'); return; }
+
+        const btn = document.getElementById('moments-submit-btn');
+        btn.disabled = true;
+        statusEl.textContent = '업로드 중…';
+
+        const fd = new FormData();
+        fd.append('image', uploadPendingFile);
+        fd.append('title', title);
+        fd.append('content', content);
+
+        try {
+          const res = await fetch(`${API_BASE}/api/moments`, {
+            method: 'POST',
+            headers: { 'x-upload-password': password },
+            body: fd,
+          });
+          if (res.status === 401) throw new Error('비밀번호가 틀렸습니다.');
+          if (!res.ok) {
+            const body = await res.json().catch(() => ({}));
+            throw new Error(body.error || `업로드 실패 (${res.status})`);
+          }
+          sessionStorage.setItem('momentsUploadPw', password);
+          statusEl.textContent = '업로드 완료!';
+          statusEl.classList.add('is-success');
+          await loadMoments();
+          setTimeout(closeUploadForm, 500);
+        } catch (err) {
+          statusEl.textContent = err.message;
+          statusEl.classList.add('is-error');
+        } finally {
+          btn.disabled = false;
+        }
+      }
+
+      async function deleteMoment(id) {
+        const saved = sessionStorage.getItem('momentsUploadPw');
+        const password = saved || window.prompt('삭제하려면 업로드 비밀번호를 입력하세요');
+        if (!password) return;
+        try {
+          const res = await fetch(`${API_BASE}/api/moments/${id}`, {
+            method: 'DELETE',
+            headers: { 'x-upload-password': password },
+          });
+          if (res.status === 401) {
+            sessionStorage.removeItem('momentsUploadPw');
+            alert('비밀번호가 틀렸습니다.');
+            return;
+          }
+          if (!res.ok) throw new Error('삭제에 실패했습니다.');
+          sessionStorage.setItem('momentsUploadPw', password);
+          closeLightbox();
+          await loadMoments();
+        } catch (err) {
+          alert(err.message);
+        }
+      }
+
+      function initMoments() {
+        const dropzone = document.getElementById('moments-dropzone');
+        const fileInput = document.getElementById('moments-file-input');
+
+        document.getElementById('moments-upload-btn').addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', () => {
+          if (fileInput.files[0]) openUploadForm(fileInput.files[0]);
+          fileInput.value = '';
+        });
+
+        dropzone.addEventListener('dragenter', (e) => { e.preventDefault(); dropzone.classList.add('drag-over'); });
+        dropzone.addEventListener('dragover', (e) => { e.preventDefault(); });
+        dropzone.addEventListener('dragleave', (e) => {
+          if (!dropzone.contains(e.relatedTarget)) dropzone.classList.remove('drag-over');
+        });
+        dropzone.addEventListener('drop', (e) => {
+          e.preventDefault();
+          dropzone.classList.remove('drag-over');
+          const file = e.dataTransfer.files && e.dataTransfer.files[0];
+          if (file && file.type.startsWith('image/')) openUploadForm(file);
+        });
+
+        document.getElementById('moments-upload-close').addEventListener('click', closeUploadForm);
+        document.getElementById('moments-submit-btn').addEventListener('click', submitMomentUpload);
+        document.getElementById('moments-upload-overlay').addEventListener('click', (e) => {
+          if (e.target.id === 'moments-upload-overlay') closeUploadForm();
+        });
+
+        document.getElementById('moments-lightbox-close').addEventListener('click', closeLightbox);
+        document.getElementById('moments-lightbox').addEventListener('click', (e) => {
+          if (e.target.id === 'moments-lightbox') closeLightbox();
+        });
+        document.getElementById('moments-lightbox-delete').addEventListener('click', () => {
+          if (deleteTargetId) deleteMoment(deleteTargetId);
+        });
+
+        document.addEventListener('keydown', (e) => {
+          if (e.key !== 'Escape') return;
+          if (document.getElementById('moments-lightbox').classList.contains('open')) closeLightbox();
+          if (document.getElementById('moments-upload-overlay').classList.contains('open')) closeUploadForm();
+        });
+
+        loadMoments();
+      }
+
       loadLostArk();
       loadMaple();
+      initMoments();
     })();
   </script>
 </body>
