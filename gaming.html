@@ -621,6 +621,16 @@
         }).join('')}</div>`;
       }
 
+      function renderArkgridCores(items) {
+        if (!items || !items.length) return '<p class="detail-loading">정보 없음</p>';
+        return `<div class="detail-icon-grid">${items.map((it) => `
+          <div class="detail-icon-item">
+            <img data-src="${imgProxy(it.icon)}" alt="" onerror="this.style.visibility='hidden'" />
+            <div class="icon-name" title="${escapeHtml(it.position)} · ${escapeHtml(it.name)}">${escapeHtml(it.position)}</div>
+            <div class="icon-lv">${escapeHtml(it.name)} (${escapeHtml(it.points)}P)</div>
+          </div>`).join('')}</div>`;
+      }
+
       // ── Lazy-loaded extra detail sections ────────────────
       async function loadLostArkDetailExtra() {
         const extraEl = document.getElementById('detail-extra');
@@ -631,7 +641,8 @@
           <div class="detail-section-title">보석</div><p class="detail-loading">불러오는 중…</p>
           <div class="detail-section-title">전투 스킬</div><p class="detail-loading">불러오는 중…</p>
           <div class="detail-section-title">장비</div><p class="detail-loading">불러오는 중…</p>
-          <div class="detail-section-title">악세서리</div><p class="detail-loading">불러오는 중…</p>`;
+          <div class="detail-section-title">악세서리</div><p class="detail-loading">불러오는 중…</p>
+          <div class="detail-section-title">아크그리드</div><p class="detail-loading">불러오는 중…</p>`;
 
         const [detailRes, lopecRes] = await Promise.allSettled([
           fetch(`${API_BASE}/api/lostark/${encodeURIComponent(LOSTARK_CHARACTER)}/detail`).then((r) => {
@@ -670,6 +681,8 @@
           ${lopec ? renderEquipmentGrid(lopec.equipment) : '<p class="detail-loading">불러오지 못했습니다 (로펙)</p>'}
           <div class="detail-section-title">악세서리 ${lopec?.accessories?.length || 0}개</div>
           ${lopec ? renderAccessoryCards(lopec.accessories) : '<p class="detail-loading">불러오지 못했습니다 (로펙)</p>'}
+          <div class="detail-section-title">아크그리드</div>
+          ${lopec ? renderArkgridCores(lopec.arkgridCores) : '<p class="detail-loading">불러오지 못했습니다 (로펙)</p>'}
         `;
         hydrateImages(extraEl);
       }
