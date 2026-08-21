@@ -644,6 +644,16 @@
           </div>`).join('')}</div>`;
       }
 
+      // 적용(active)되는 효과들의 % 값만 합산 — 초과분은 실제로 안 붙는 수치라 제외.
+      function sumActiveGemEffects(items) {
+        if (!items || !items.length) return null;
+        const total = items
+          .filter((it) => it.active && /%$/.test((it.value || '').trim()))
+          .reduce((sum, it) => sum + parseFloat(it.value), 0);
+        if (!total) return null;
+        return Math.round(total * 10) / 10;
+      }
+
       // 젬 누적 효과 — 실제 적용되는 상위 효과(active)와 상한 초과로 버려지는 효과를 구분해서 보여준다.
       function renderArkgridGemEffects(items) {
         if (!items || !items.length) return '<p class="detail-loading">정보 없음</p>';
@@ -711,7 +721,7 @@
           ${lopec ? renderAccessoryCards(lopec.accessories) : '<p class="detail-loading">불러오지 못했습니다 (로펙)</p>'}
           <div class="detail-section-title">아크그리드</div>
           ${lopec ? renderArkgridCores(lopec.arkgridCores) : '<p class="detail-loading">불러오지 못했습니다 (로펙)</p>'}
-          <div class="detail-section-title">젬 누적 효과</div>
+          <div class="detail-section-title">젬 누적 효과${lopec && sumActiveGemEffects(lopec.arkgridGemEffects) != null ? ` - ${sumActiveGemEffects(lopec.arkgridGemEffects)}%` : ''}</div>
           ${lopec ? renderArkgridGemEffects(lopec.arkgridGemEffects) : '<p class="detail-loading">불러오지 못했습니다 (로펙)</p>'}
         `;
         hydrateImages(extraEl);
